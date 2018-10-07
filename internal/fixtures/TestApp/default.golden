@@ -1,0 +1,18 @@
+ERROR usage: horcrux [<flags>] <command> [<args> ...]
+ERROR 
+ERROR paper backup for the paranoid
+ERROR 
+ERROR Flags:
+ERROR   --help  Show context-sensitive help (also try --help-long and --help-man).
+ERROR 
+ERROR Commands:
+ERROR   help [<command>...]
+ERROR     Show help.
+ERROR 
+ERROR   create [<flags>] [<input>]
+ERROR     create a new set of horcruxes
+ERROR 
+ERROR   restore [<flags>] <files>...
+ERROR     restores your valuable data from a set of horcruxes
+ERROR 
+ERROR 

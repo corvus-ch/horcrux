@@ -1,0 +1,14 @@
+ERROR usage: horcrux restore [<flags>] <files>...
+ERROR 
+ERROR restores your valuable data from a set of horcruxes
+ERROR 
+ERROR Flags:
+ERROR       --help           Show context-sensitive help (also try --help-long and
+ERROR                        --help-man).
+ERROR   -o, --output=OUTPUT  path to the output
+ERROR   -f, --format="raw"   the formats the horcruxes are created in
+ERROR   -d, --decrypt        encrypt output
+ERROR 
+ERROR Args:
+ERROR   <files>  path tho the individual horcruxes
+ERROR 
