@@ -13,6 +13,7 @@ func New(stem string) *Format {
 	return &Format{stem: stem}
 }
 
+// Format represents the raw type format.
 type Format struct {
 	stem string
 }
