@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/corvus-ch/horcrux/format/raw"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/horcrux/restore"
 	"github.com/corvus-ch/logr/buffered"
@@ -74,19 +75,21 @@ func TestRestoreCommand_Format(t *testing.T) {
 	file := createTempFile(t)
 	defer os.Remove(file.Name())
 	tests := []struct {
-		name string
-		args []string
+		name   string
+		args   []string
+		format string
 	}{
-		{"default", []string{"restore", file.Name()}},
-		{"raw", []string{"restore", "-f", "zbase32", file.Name()}},
+		{"default", []string{"restore", file.Name()}, raw.Name},
+		{"zbase32", []string{"restore", "-f", "zbase32", file.Name()}, ""},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertRestoreAction(t, test.args, func(cfg restore.Config) error {
-				if _, err := cfg.Format(); err != nil {
+				format, err := cfg.Format()
+				if err != nil {
 					t.Skip("Formats not yet implemented")
 				}
-				t.Fatal("Formats inplemented but test not yet completed")
+				assert.Equal(t, test.format, format.Name())
 				return nil
 			})
 		})

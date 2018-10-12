@@ -106,11 +106,11 @@ func (c *createCommand) stem() string {
 
 	file := c.input
 
-	if file == "-" {
-		file = ""
+	if file == "-" || file == "" {
+		file = "part"
 	}
 
-	b := filepath.Base(c.input)
+	b := filepath.Base(file)
 
 	return strings.TrimSuffix(b, filepath.Ext(b))
 }
