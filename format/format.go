@@ -7,7 +7,8 @@ import (
 	"github.com/corvus-ch/horcrux/format/raw"
 )
 
-var DEFAULT = raw.Name
+// Default holds the name of the default format.
+const Default = raw.Name
 
 // Format describes the interface for the various input/output formats.
 type Format interface {
@@ -24,6 +25,7 @@ type Format interface {
 	Name() string
 }
 
+// New creates a new format object.
 func New(format, stem string) (Format, error) {
 	switch format {
 	case raw.Name:
