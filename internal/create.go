@@ -50,7 +50,7 @@ func RegisterCreateCommand(app *kingpin.Application, log logr.Logger, action cre
 		Short('n').
 		IntVar(&c.threshold)
 	cc.Flag("format", "the formats the horcruxes are created in").
-		Default(format.DEFAULT).
+		Default(format.Default).
 		Short('f').
 		StringsVar(&c.formats)
 	cc.Flag("encrypt", "encrypt output").
@@ -106,11 +106,11 @@ func (c *createCommand) stem() string {
 
 	file := c.input
 
-	if file == "-" {
-		file = ""
+	if file == "-" || file == "" {
+		file = "part"
 	}
 
-	b := filepath.Base(c.input)
+	b := filepath.Base(file)
 
 	return strings.TrimSuffix(b, filepath.Ext(b))
 }

@@ -106,20 +106,25 @@ func TestCreateCommand_Input(t *testing.T) {
 
 func TestCreateCommand_Formats(t *testing.T) {
 	tests := []struct {
-		name string
-		args []string
+		name        string
+		args        []string
+		outputNames []string
 	}{
-		{"default", []string{"create"}},
-		{"single", []string{"create", "-f", "raw"}},
-		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}},
+		{"default", []string{"create"}, []string{"part.raw.042"}},
+		{"stem", []string{"create", "-o", "foo"}, []string{"foo.raw.042"}},
+		{"single", []string{"create", "-f", "raw"}, []string{"part.raw.042"}},
+		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}, []string{"part.raw.042", "part.zbase32.042"}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config) error {
-				if _, err := cfg.Formats(); err != nil {
+				formats, err := cfg.Formats()
+				if err != nil {
 					t.Skip("Formats not yet implemented")
 				}
-				t.Fatal("Formats inplemented but test not yet completed")
+				for i, outputName := range test.outputNames {
+					assert.Equal(t, outputName, formats[i].OutputFileName(42))
+				}
 				return nil
 			})
 		})

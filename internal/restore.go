@@ -39,7 +39,7 @@ func RegisterRestoreCommand(app *kingpin.Application, log logr.Logger, action re
 		Short('o').
 		StringVar(&c.output)
 	cc.Flag("format", "the formats the horcruxes are created in").
-		Default(format.DEFAULT).
+		Default(format.Default).
 		Short('f').
 		StringVar(&c.format)
 	cc.Flag("decrypt", "encrypt output").
