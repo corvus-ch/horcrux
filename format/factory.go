@@ -16,29 +16,29 @@ import (
 type Factory struct {
 	io.Closer
 	c       []io.Closer // List of Closer instances waiting to be closed.
-	configs []Format    // Per format configuration. If nil the format is disabled.
+	formats []Format    // Per format configuration. If nil the format is disabled.
 	encrypt bool        // Whether or not the output should be encrypted with a random password
 	log     logr.Logger // The output where the auto generated passwords are written to
 }
 
 // NewFactory creates a new instance of Factory.
 func NewFactory(c []Format, encrypt bool, log logr.Logger) *Factory {
-	return &Factory{configs: c, encrypt: encrypt, log: log}
+	return &Factory{formats: c, encrypt: encrypt, log: log}
 }
 
 // Create is a factory method to be passed to the Shamir splitter.
 func (f *Factory) Create(x byte) (io.Writer, error) {
-	ws := make([]io.Writer, len(f.configs))
+	ws := make([]io.Writer, len(f.formats))
 
 	var i int
 	var c []io.Closer
-	for _, conf := range f.configs {
-		file, err := os.Create(conf.OutputFileName(x))
+	for _, format := range f.formats {
+		file, err := os.Create(format.OutputFileName(x))
 		if nil != err {
 			return nil, err
 		}
 		f.c = append(f.c, file)
-		if ws[i], c, err = conf.Writer(file); nil != err {
+		if ws[i], c, err = format.Writer(file); nil != err {
 			return nil, err
 		}
 		if nil != c {
