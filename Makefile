@@ -31,7 +31,8 @@ install:
 build: c.out ${package_name}
 
 .PHONY: test
-test: c.out
+test: c.out test.bin ${package_name}
+	./${package_name} create test.bin && ls test.raw.* > /dev/null
 
 c.out: main.cov $(addsuffix pkg.cov,${test_pkgs})
 	find . -name '*.cov' -exec gocoverutil -coverprofile=$@ merge {} +
@@ -42,7 +43,12 @@ c.out: main.cov $(addsuffix pkg.cov,${test_pkgs})
 ${package_name}: **/*.go *.go
 	go build
 
+test.bin:
+	dd bs=16 count=8 if=/dev/urandom of="${@}"
+
 .PHONY: clean
 clean:
 	rm -f "${package_name}"
+	rm -f test.bin
 	find . -name '*.cov' -delete -or -name 'c.out' -delete
+	find . -maxdepth 1 -name '*.bin.*' -or -name '*.raw.*' -or -name '*.txt.*' -or -name '*.zbase32.*' -or -name 'result*' | xargs rm
