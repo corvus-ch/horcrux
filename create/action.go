@@ -9,7 +9,8 @@ import (
 	"github.com/corvus-ch/shamir"
 )
 
-func Create(cfg Config, log logr.Logger) error {
+// Create creates a new set of secret parts according to the given config.
+func Create(cfg Config, log logr.Logger) (result error) {
 	reader, err := cfg.Input()
 	if err != nil {
 		return fmt.Errorf("failed to open input: %v", err)
@@ -25,6 +26,7 @@ func Create(cfg Config, log logr.Logger) error {
 	}
 
 	factory := format.NewFactory(formats, cfg.Encrypt(), log)
+	defer factory.Close()
 
 	writer, err := shamir.NewWriter(cfg.Parts(), cfg.Threshold(), factory.Create)
 	if nil != err {
@@ -32,12 +34,8 @@ func Create(cfg Config, log logr.Logger) error {
 	}
 
 	if _, err := io.Copy(writer, reader); nil != err {
-		return fmt.Errorf("failed to process data: %v", err)
+		result = fmt.Errorf("failed to process data: %v", err)
 	}
 
-	if err := factory.Close(); nil != err {
-		return fmt.Errorf("failed to close open files: %v", err)
-	}
-
-	return nil
+	return
 }
