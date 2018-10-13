@@ -1,14 +1,14 @@
 package format_test
 
 import (
-	"testing"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
-	"github.com/corvus-ch/logr/buffered"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/logr/buffered"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,7 +38,7 @@ func TestFactory_Create(t *testing.T) {
 		encrypted bool
 		assert    func(*testing.T)
 	}{
-		{"plain",false, func(t *testing.T) {
+		{"plain", false, func(t *testing.T) {
 			assertTempFile(t, filepath.Join(tmp, "plain.raw.042"), 5)
 		}},
 		{"encrypted", true, func(t *testing.T) {

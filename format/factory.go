@@ -31,18 +31,10 @@ func (f *Factory) Create(x byte) (io.Writer, error) {
 	ws := make([]io.Writer, len(f.formats))
 
 	var i int
-	var c []io.Closer
+	var err error
 	for _, format := range f.formats {
-		file, err := os.Create(format.OutputFileName(x))
-		if nil != err {
+		if ws[i], err = f.create(x, format); err != nil {
 			return nil, err
-		}
-		f.c = append(f.c, file)
-		if ws[i], c, err = format.Writer(file); nil != err {
-			return nil, err
-		}
-		if nil != c {
-			f.c = append(f.c, c...)
 		}
 		i++
 	}
@@ -51,18 +43,40 @@ func (f *Factory) Create(x byte) (io.Writer, error) {
 		return io.MultiWriter(ws...), nil
 	}
 
+	return f.encryptWriter(io.MultiWriter(ws...), x)
+}
+
+func (f *Factory) create(x byte, format Format) (io.Writer, error) {
+	file, err := os.Create(format.OutputFileName(x))
+	if nil != err {
+		return nil, err
+	}
+	f.c = append(f.c, file)
+	w, c, err := format.Writer(file)
+	if nil != err {
+		return nil, err
+	}
+	if nil != c {
+		f.c = append(f.c, c...)
+	}
+
+	return w, nil
+}
+
+func (f *Factory) encryptWriter(w io.Writer, x byte) (io.Writer, error) {
 	p, err := generatePassword()
 	if nil != err {
 		return nil, err
 	}
 	hints := &openpgp.FileHints{IsBinary: true, FileName: fmt.Sprintf("%03d.gpg", x)}
-	cypher, err := openpgp.SymmetricallyEncrypt(io.MultiWriter(ws...), p, hints, nil)
+	cypher, err := openpgp.SymmetricallyEncrypt(w, p, hints, nil)
 	if nil != err {
 		return nil, err
 	}
 	f.c = append(f.c, cypher)
 
 	f.log.Infof("Password for %03d: %s", x, p)
+
 	return cypher, nil
 }
 
