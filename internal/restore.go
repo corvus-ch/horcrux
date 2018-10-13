@@ -7,10 +7,11 @@ import (
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/format"
 	"github.com/corvus-ch/horcrux/restore"
+	"github.com/corvus-ch/logr/writer_adapter"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-type restoreAction func(cfg restore.Config) error
+type restoreAction func(restore.Config, restore.Prompter, logr.Logger) error
 
 type restoreCommand struct {
 	action restoreAction
@@ -50,7 +51,7 @@ func RegisterRestoreCommand(app *kingpin.Application, log logr.Logger, action re
 }
 
 func (c *restoreCommand) Execute(_ *kingpin.ParseContext) error {
-	return c.action(c)
+	return c.action(c, restore.NewPrompter(writer_adapter.NewInfoWriter(c.log)), c.log)
 }
 
 func (c *restoreCommand) Format() (format.Format, error) {
