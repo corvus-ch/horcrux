@@ -12,7 +12,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-type createAction func(cfg create.Config) error
+type createAction func(cfg create.Config, logger logr.Logger) error
 
 type createCommand struct {
 	action createAction
@@ -61,7 +61,7 @@ func RegisterCreateCommand(app *kingpin.Application, log logr.Logger, action cre
 }
 
 func (c *createCommand) Execute(_ *kingpin.ParseContext) error {
-	return c.action(c)
+	return c.action(c, c.log)
 }
 
 func (c *createCommand) Input() (io.Reader, error) {
