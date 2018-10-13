@@ -2,9 +2,9 @@ package internal
 
 import (
 	"github.com/bketelsen/logr"
+	"github.com/corvus-ch/horcrux/create"
 	"github.com/corvus-ch/logr/writer_adapter"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"github.com/corvus-ch/horcrux/create"
 )
 
 func App(log logr.Logger) *kingpin.Application {

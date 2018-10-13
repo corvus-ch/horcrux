@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
+	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/create"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"github.com/bketelsen/logr"
 )
 
 func assertCreateAction(t *testing.T, args []string, action func(create.Config, logr.Logger) error) {
