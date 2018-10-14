@@ -42,6 +42,12 @@ Restore a GPG key (builds on top of the above example):
     paperkey --pubring=public.gpg --secrets=paperkey.bin --input-type=raw --output=secret.gpg
     diff "${KEY_ID}.gpg" secret.gpg
 
+# Milestones
+
+* [x] Basic application
+* [ ] Plain text format for print and easy scan/ocr
+* [ ] QR Code format for easier scanning
+
 ## Contributing and license
 
 This library is licenced under [MIT]. For information about how to contribute
