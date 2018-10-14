@@ -1,0 +1,18 @@
+project_name: horcrux
+
+builds:
+  - binary: horcrux
+    goos:
+      - windows
+      - darwin
+      - linux
+
+release:
+  github:
+    owner: corvus-ch
+    name: horcrux
+
+archive:
+  format_overrides:
+    - goos: windows
+      format: zip

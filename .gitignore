@@ -17,3 +17,6 @@
 test.*
 horcrux
 result.bin
+
+# Release artifacts
+/dist/
