@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/openpgp"
 )
 
+// Restore merges a set of parts into the original secret.
 func Restore(cfg Config, p Prompter, log logr.Logger) error {
 	var closers []io.Closer
 	defer func() {
