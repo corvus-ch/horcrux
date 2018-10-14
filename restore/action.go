@@ -14,7 +14,7 @@ import (
 )
 
 // Restore merges a set of parts into the original secret.
-func Restore(cfg Config, p PasswordProvider, log logr.Logger) error {
+func Restore(cfg Config, p PasswordProvider, log logr.Logger) (error) {
 	var closers []io.Closer
 	defer func() {
 		for i := len(closers) - 1; i >= 0; i-- {
@@ -27,44 +27,23 @@ func Restore(cfg Config, p PasswordProvider, log logr.Logger) error {
 
 	for _, fileName := range fileNames {
 		log.Infof("Reading file %s\n", fileName)
-		i, err := strconv.ParseUint(strings.TrimLeft(filepath.Ext(fileName), "."), 10, 8)
-		if nil != err {
-			return fmt.Errorf("failed to get shamir index from file name: %v", err)
+		i, in, file, err := getInput(cfg, fileName, p)
+		if file != nil {
+			closers = append(closers, file)
 		}
-
-		file, err := os.Open(fileName)
-		if nil != err {
-			return fmt.Errorf("failed to open %s: %v", fileName, err)
-		}
-
-		closers = append(closers, file)
-
-		format, err := cfg.Format()
 		if err != nil {
-			return fmt.Errorf("failed to to detect input format: %v", err)
+			return err
 		}
-		in, err := format.Reader(file)
-		if err != nil {
-			return fmt.Errorf("failed to create input reader: %v", err)
-		}
-
-		if cfg.Decrypt() {
-			in, err = gedDecryptionReader(in, p)
-			if err != nil {
-				return fmt.Errorf("failed to create decryption reader: %v", err)
-			}
-		}
-
 		inputs[byte(i)] = in
 	}
 
 	in, err := shamir.NewReader(inputs)
-	if nil != err {
+	if err != nil {
 		return fmt.Errorf("failed to create processing pipeline: %v", err)
 	}
 
 	out, err := cfg.Output()
-	if nil != err {
+	if err != nil {
 		return fmt.Errorf("failed to open output: %v", err)
 	}
 
@@ -72,11 +51,45 @@ func Restore(cfg Config, p PasswordProvider, log logr.Logger) error {
 		closers = append(closers, c)
 	}
 
-	if _, err := io.Copy(out, in); nil != err {
-		return fmt.Errorf("Failed to process data: %v", err)
+	return restore(in, out)
+}
+
+func getInput(cfg Config, fileName string, p PasswordProvider) (uint64, io.Reader, io.ReadCloser, error) {
+	i, err := strconv.ParseUint(strings.TrimLeft(filepath.Ext(fileName), "."), 10, 8)
+	if err != nil {
+		return i, nil, nil, fmt.Errorf("failed to get shamir index from file name: %v", err)
 	}
 
-	return nil
+	file, err := os.Open(fileName)
+	if err != nil {
+		return i, nil, file, fmt.Errorf("failed to open %s: %v", fileName, err)
+	}
+
+	in, err := getFormatReader(cfg, file, p)
+
+	return i, in, file, err
+}
+
+
+func getFormatReader(cfg Config, file io.Reader, p PasswordProvider) (io.Reader, error) {
+	format, err := cfg.Format()
+	if err != nil {
+		return nil, fmt.Errorf("failed to to detect input format: %v", err)
+	}
+
+	in, err := format.Reader(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create input reader: %v", err)
+	}
+
+	if cfg.Decrypt() {
+		in, err = gedDecryptionReader(in, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create decryption reader: %v", err)
+		}
+	}
+
+	return in, nil
 }
 
 func gedDecryptionReader(r io.Reader, p PasswordProvider) (io.Reader, error) {
@@ -88,4 +101,13 @@ func gedDecryptionReader(r io.Reader, p PasswordProvider) (io.Reader, error) {
 	}
 
 	return md.UnverifiedBody, nil
+}
+
+func restore(in io.Reader, out io.Writer) error {
+	_, err := io.Copy(out, in)
+	if err != nil {
+		return fmt.Errorf("failed to process data: %v", err)
+	}
+
+	return nil
 }
