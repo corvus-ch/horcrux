@@ -10,7 +10,7 @@ import (
 
 func App(log logr.Logger) *kingpin.Application {
 	w := writer_adapter.NewBufferedErrorWriter(log)
-	app := kingpin.New("horcrux", "paper backup for the paranoid")
+	app := kingpin.New("horcrux", "a helper for preparing backups of data worth protecting")
 	app.UsageWriter(w)
 	app.ErrorWriter(w)
 	RegisterCreateCommand(app, log, create.Create)
