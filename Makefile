@@ -44,6 +44,14 @@ c.out: main.cov $(addsuffix pkg.cov,${test_pkgs})
 ${package_name}: **/*.go *.go
 	go build
 
+.PHONY: release
+release:
+	goreleaser --rm-dist
+
+.PHONY: snapshot
+snapshot:
+	goreleaser --rm-dist --snapshot
+
 test.bin:
 	dd bs=16 count=8 if=/dev/urandom of="${@}"
 

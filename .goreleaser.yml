@@ -1,0 +1,41 @@
+project_name: horcrux
+
+builds:
+  - binary: horcrux
+    goos:
+      - windows
+      - darwin
+      - linux
+
+release:
+  github:
+    owner: corvus-ch
+    name: horcrux
+
+archive:
+  format_overrides:
+    - goos: windows
+      format: zip
+
+brew:
+  github:
+    owner: corvus-ch
+    name: homebrew-tools
+
+  homepage: https://github.com/corvus-ch/horcrux
+  description: A helper for preparing backups of data worth protecting
+
+nfpm:
+  homepage: https://github.com/corvus-ch/horcrux
+  description: A helper for preparing backups of data worth protecting
+  maintainer: Christian Häusler <haeusler.christian@mac.com>
+  license: MIT
+
+  formats:
+    - deb
+
+  suggests:
+    - gpg
+    - paperkey
+
+  bindir: /usr/bin
