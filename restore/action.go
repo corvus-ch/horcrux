@@ -14,7 +14,7 @@ import (
 )
 
 // Restore merges a set of parts into the original secret.
-func Restore(cfg Config, p Prompter, log logr.Logger) error {
+func Restore(cfg Config, p PasswordProvider, log logr.Logger) error {
 	var closers []io.Closer
 	defer func() {
 		for i := len(closers) - 1; i >= 0; i-- {
@@ -79,9 +79,9 @@ func Restore(cfg Config, p Prompter, log logr.Logger) error {
 	return nil
 }
 
-func gedDecryptionReader(r io.Reader, p Prompter) (io.Reader, error) {
+func gedDecryptionReader(r io.Reader, p PasswordProvider) (io.Reader, error) {
 	md, err := openpgp.ReadMessage(r, nil, func(keys []openpgp.Key, symmetric bool) ([]byte, error) {
-		return p.Prompt("Enter password: ")
+		return p.GetPassword("Enter password: ")
 	}, nil)
 	if nil != err {
 		return nil, err

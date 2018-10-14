@@ -11,7 +11,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-type restoreAction func(restore.Config, restore.Prompter, logr.Logger) error
+type restoreAction func(restore.Config, restore.PasswordProvider, logr.Logger) error
 
 type restoreCommand struct {
 	action restoreAction
@@ -51,7 +51,7 @@ func RegisterRestoreCommand(app *kingpin.Application, log logr.Logger, action re
 }
 
 func (c *restoreCommand) Execute(_ *kingpin.ParseContext) error {
-	return c.action(c, restore.NewPrompter(writer_adapter.NewInfoWriter(c.log)), c.log)
+	return c.action(c, restore.NewPasswordProvider(writer_adapter.NewInfoWriter(c.log)), c.log)
 }
 
 func (c *restoreCommand) Format() (format.Format, error) {

@@ -34,7 +34,7 @@ func TestRestore(t *testing.T) {
 			files := split(t, dir, raw.Name, t.Name(), test.encrypted)
 
 			cfg, buf := NewConfig(files, raw.New("raw"), test.encrypted)
-			prompt := NewPrompter(files)
+			prompt := NewPasswordProvider(files)
 			log := buffered.New(1)
 
 			err := action.Restore(cfg, prompt, log)
@@ -123,7 +123,7 @@ func TestRestoreErrors(t *testing.T) {
 			files := split(t, dir, raw.Name, t.Name(), test.encrypted)
 			cfg := &Config{}
 			buf, output, passwords := test.setup(t, cfg, dir, files)
-			prompt := NewPrompter(passwords)
+			prompt := NewPasswordProvider(passwords)
 			log := buffered.New(0)
 
 			err := action.Restore(cfg, prompt, log)

@@ -14,7 +14,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-func assertRestoreAction(t *testing.T, args []string, action func(restore.Config, restore.Prompter, logr.Logger) error) {
+func assertRestoreAction(t *testing.T, args []string, action func(restore.Config, restore.PasswordProvider, logr.Logger) error) {
 	log := buffered.New(0)
 	app := kingpin.New("test", "test")
 	internal.RegisterRestoreCommand(app, log, action)
@@ -43,7 +43,7 @@ func TestRestoreCommand_Decrypt(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.Prompter, _ logr.Logger) error {
+			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.PasswordProvider, _ logr.Logger) error {
 				assert.Equal(t, test.encrypted, cfg.Decrypt())
 				return nil
 			})
@@ -64,7 +64,7 @@ func TestRestoreCommand_FileNames(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.Prompter, _ logr.Logger) error {
+			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.PasswordProvider, _ logr.Logger) error {
 				assert.Equal(t, test.names, cfg.FileNames())
 				return nil
 			})
@@ -85,7 +85,7 @@ func TestRestoreCommand_Format(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.Prompter, _ logr.Logger) error {
+			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.PasswordProvider, _ logr.Logger) error {
 				format, err := cfg.Format()
 				if err != nil {
 					t.Skip("Formats not yet implemented")
@@ -112,7 +112,7 @@ func TestRestoreCommand_Output(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.Prompter, _ logr.Logger) error {
+			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.PasswordProvider, _ logr.Logger) error {
 				reader, err := cfg.Output()
 				assert.Nil(t, err)
 				assert.Equal(t, test.writer.Name(), reader.(*os.File).Name())

@@ -4,15 +4,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Prompter struct {
+type TestPasswordProvider struct {
 	passwords []string
 }
 
-func NewPrompter(passwords []string) *Prompter {
-	return &Prompter{passwords: passwords}
+func NewPasswordProvider(passwords []string) *TestPasswordProvider {
+	return &TestPasswordProvider{passwords: passwords}
 }
 
-func (p *Prompter) Prompt(_ string) ([]byte, error) {
+func (p *TestPasswordProvider) GetPassword(_ string) ([]byte, error) {
 	if len(p.passwords) < 1 {
 		return nil, errors.New("no passwords available")
 	}
