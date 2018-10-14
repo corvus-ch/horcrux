@@ -6,6 +6,7 @@ import (
 
 	"github.com/corvus-ch/horcrux/format"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,6 +16,7 @@ func TestNew(t *testing.T) {
 		err  error
 	}{
 		{raw.Name, nil},
+		{zbase32.Name, nil},
 		{"foo", fmt.Errorf("unknown format foo")},
 	}
 	for _, test := range tests {

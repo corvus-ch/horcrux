@@ -7,6 +7,7 @@ import (
 
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/horcrux/restore"
 	"github.com/corvus-ch/logr/buffered"
@@ -81,14 +82,15 @@ func TestRestoreCommand_Format(t *testing.T) {
 		format string
 	}{
 		{"default", []string{"restore", file.Name()}, raw.Name},
-		{"zbase32", []string{"restore", "-f", "zbase32", file.Name()}, ""},
+		{"raw", []string{"restore", "-f", "raw", file.Name()}, raw.Name},
+		{"zbase32", []string{"restore", "-f", "zbase32", file.Name()}, zbase32.Name},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertRestoreAction(t, test.args, func(cfg restore.Config, _ restore.PasswordProvider, _ logr.Logger) error {
 				format, err := cfg.Format()
 				if err != nil {
-					t.Skip("Formats not yet implemented")
+					t.Fatal("Missing format")
 				}
 				assert.Equal(t, test.format, format.Name())
 				return nil
