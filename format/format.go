@@ -2,6 +2,7 @@ package format
 
 import (
 	"fmt"
+	"github.com/corvus-ch/horcrux/format/text"
 	"io"
 
 	"github.com/corvus-ch/horcrux/format/base64"
@@ -38,6 +39,9 @@ func New(format, stem string) (Format, error) {
 
 	case base64.Name:
 		return base64.New(stem), nil
+
+	case text.Name:
+		return text.New(stem), nil
 
 	default:
 		return nil, fmt.Errorf("unknown format %s", format)
