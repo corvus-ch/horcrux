@@ -16,3 +16,11 @@ archive:
   format_overrides:
     - goos: windows
       format: zip
+
+brew:
+  github:
+    owner: corvus-ch
+    name: homebrew-tools
+
+  homepage: https://github.com/corvus-ch/horcrux
+  description: A helper for preparing backups of data worth protecting
