@@ -14,7 +14,7 @@ import (
 )
 
 // Restore merges a set of parts into the original secret.
-func Restore(cfg Config, p PasswordProvider, log logr.Logger) (error) {
+func Restore(cfg Config, p PasswordProvider, log logr.Logger) error {
 	var closers []io.Closer
 	defer func() {
 		for i := len(closers) - 1; i >= 0; i-- {
@@ -69,7 +69,6 @@ func getInput(cfg Config, fileName string, p PasswordProvider) (uint64, io.Reade
 
 	return i, in, file, err
 }
-
 
 func getFormatReader(cfg Config, file io.Reader, p PasswordProvider) (io.Reader, error) {
 	format, err := cfg.Format()
