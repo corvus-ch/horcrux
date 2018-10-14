@@ -42,7 +42,7 @@ Restore a GPG key (builds on top of the above example):
     paperkey --pubring=public.gpg --secrets=paperkey.bin --input-type=raw --output=secret.gpg
     diff "${KEY_ID}.gpg" secret.gpg
 
-# Milestones
+## Milestones
 
 * [x] Basic application
 * [ ] Plain text format for print and easy scan/ocr
