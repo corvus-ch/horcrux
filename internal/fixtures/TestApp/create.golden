@@ -3,13 +3,13 @@ ERROR
 ERROR create a new set of horcruxes
 ERROR 
 ERROR Flags:
-ERROR       --help            Show context-sensitive help (also try --help-long and
-ERROR                         --help-man).
-ERROR   -o, --output=OUTPUT   name stem for the output files
-ERROR   -m, --sharecount=3    the number of horcruxes to create
-ERROR   -n, --threshold=2     the minimal number of horcruxes required for a restore
-ERROR   -f, --format=raw ...  the formats the horcruxes are created in
-ERROR   -e, --encrypt         encrypt output
+ERROR       --help             Show context-sensitive help (also try --help-long and
+ERROR                          --help-man).
+ERROR   -o, --output=OUTPUT    name stem for the output files
+ERROR   -m, --sharecount=3     the number of horcruxes to create
+ERROR   -n, --threshold=2      the minimal number of horcruxes required for a restore
+ERROR   -f, --format=text ...  the formats the horcruxes are created in
+ERROR   -e, --encrypt          encrypt output
 ERROR 
 ERROR Args:
 ERROR   [<input>]  the input file to split
