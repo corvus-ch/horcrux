@@ -119,7 +119,7 @@ func bufLen(l uint8) int {
 		l -= l / 6
 	}
 	// Reduce by the whitespace between data an CRC.
-	l -= 1
+	l--
 
 	return int(l)
 }
