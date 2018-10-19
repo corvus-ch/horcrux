@@ -2,19 +2,16 @@ package zbase32_test
 
 import (
 	"bytes"
-	"fmt"
+	"github.com/corvus-ch/horcrux/format"
 	"io/ioutil"
 	"testing"
 
+	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
 	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/stretchr/testify/assert"
 )
 
-var nameTests = []struct {
-	x        byte
-	stem     string
-	expected string
-}{
+var nameTests = []formatAssert.NameTest{
 	{0, "mollis", "mollis.zbase32.000"},
 	{1, "commodo", "commodo.zbase32.001"},
 	{42, "pellentesque", "pellentesque.zbase32.042"},
@@ -23,13 +20,12 @@ var nameTests = []struct {
 	{255, "ridiculus", "ridiculus.zbase32.255"},
 }
 
+func factory(s string) format.Format {
+	return zbase32.New(s)
+}
+
 func TestFormat_OutputFileName(t *testing.T) {
-	for _, test := range nameTests {
-		t.Run(fmt.Sprint(test.x), func(t *testing.T) {
-			f := zbase32.New(test.stem)
-			assert.Equal(t, test.expected, f.OutputFileName(test.x))
-		})
-	}
+	formatAssert.Name(t, nameTests, factory)
 }
 
 var testData = []struct {

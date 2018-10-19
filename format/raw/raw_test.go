@@ -2,20 +2,17 @@ package raw_test
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"testing"
 
+	"github.com/corvus-ch/horcrux/format"
+	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
 	"github.com/corvus-ch/horcrux/format/raw"
 	"github.com/stretchr/testify/assert"
 )
 
-var nameTests = []struct {
-	x        byte
-	stem     string
-	expected string
-}{
+var nameTests = []formatAssert.NameTest{
 	{0, "mollis", "mollis.raw.000"},
 	{1, "commodo", "commodo.raw.001"},
 	{42, "pellentesque", "pellentesque.raw.042"},
@@ -24,13 +21,12 @@ var nameTests = []struct {
 	{255, "ridiculus", "ridiculus.raw.255"},
 }
 
+func factory(s string) format.Format {
+	return raw.New(s)
+}
+
 func TestFormat_OutputFileName(t *testing.T) {
-	for _, test := range nameTests {
-		t.Run(fmt.Sprint(test.x), func(t *testing.T) {
-			f := raw.New(test.stem)
-			assert.Equal(t, test.expected, f.OutputFileName(test.x))
-		})
-	}
+	formatAssert.Name(t, nameTests, factory)
 }
 
 func TestFormat_Reader(t *testing.T) {
