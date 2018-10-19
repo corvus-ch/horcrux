@@ -75,7 +75,7 @@ Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Nulla vitae
 	{name: "invalid data", text: `1: Lorem impsum`, err: `found "Lorem", expected data or checksum`},
 	{name: "missing checksum", text: `6: j7n7s by`, err: `found "", expected data or checksum`},
 	{name: "none zbase32 chars", text: `42: j7n7s lorem`, err: `found "lorem", expected data or checksum`},
-	{name: "multi line", text: "6 j7n7s by\n7: as8kg", err: `found "", expected data or checksum`},
+	{name: "multi Line", text: "6 j7n7s by\n7: as8kg", err: `found "", expected data or checksum`},
 }
 
 func TestReader_Read(t *testing.T) {

@@ -160,5 +160,5 @@ func isCRC(s string) bool {
 // Represents a marker rune for the end of the reader.
 var eof = rune(0)
 
-// Represents a marker for the end of a line.
+// Represents a marker for the end of a Line.
 var eol = rune(0x0a)

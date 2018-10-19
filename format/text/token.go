@@ -8,7 +8,7 @@ const (
 
 	// EOF denotes the end of a file.
 	EOF token = iota
-	// EOL denotes the end of a line.
+	// EOL denotes the end of a Line.
 	EOL
 	// WS denotes any whitespace except EOF and EOL.
 	WS
@@ -19,7 +19,7 @@ const (
 	CRC
 	// DATA denotes the zbase32 encoded payload data.
 	DATA
-	// LINO denotes a line number.
+	// LINO denotes a Line number.
 	LINO
 	// DESC denotes any other type of text.
 	DESC

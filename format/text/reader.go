@@ -65,7 +65,7 @@ func (r *reader) readLine() ([]byte, error) {
 		return nil, err
 	}
 
-	// Empty line means we have reached the last line containing the document checksum.
+	// Empty Line means we have reached the last Line containing the document checksum.
 	if len(data) == 0 {
 		return nil, io.EOF
 	}
@@ -73,13 +73,13 @@ func (r *reader) readLine() ([]byte, error) {
 	return data, nil
 }
 
-func (r *reader) assertChecksum(data []byte, l *line) error {
+func (r *reader) assertChecksum(data []byte, l *Line) error {
 	if _, err := r.crc.Write(data); nil != err {
 		return err
 	}
 
 	if r.crc.Sum24() != l.CRC {
-		return fmt.Errorf(`checksum does not match on line %v: %06X`, l.N, r.crc.Sum24())
+		return fmt.Errorf(`checksum does not match on Line %v: %06X`, l.N, r.crc.Sum24())
 	}
 
 	return nil

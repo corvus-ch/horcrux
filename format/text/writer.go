@@ -88,19 +88,19 @@ func (w *writer) Close() error {
 func (w *writer) writeLine(data []byte) error {
 	w.n++
 	if _, err := w.w.Write([]byte(fmt.Sprintf("% 4d: ", w.n))); nil != err {
-		return fmt.Errorf("Failed to write line index: %v", err)
+		return fmt.Errorf("Failed to write Line index: %v", err)
 	}
 	for i := 0; i < len(data); i += 5 {
 		j := min(i+5, len(data))
 		if _, err := w.w.Write(data[i:j]); nil != err {
-			return fmt.Errorf("Failed to write line data: %v", err)
+			return fmt.Errorf("Failed to write Line data: %v", err)
 		}
 		if _, err := w.w.Write([]byte{' '}); nil != err {
-			return fmt.Errorf("Failed to write line data: %v", err)
+			return fmt.Errorf("Failed to write Line data: %v", err)
 		}
 	}
 	if _, err := w.w.Write([]byte(formatCRC24(w.crc))); nil != err {
-		return fmt.Errorf("Failed to write line checksum: %v", err)
+		return fmt.Errorf("Failed to write Line checksum: %v", err)
 	}
 	return nil
 }
@@ -110,7 +110,7 @@ func formatCRC24(hash crc24.Hash24) string {
 }
 
 func bufLen(l uint8) int {
-	// Reduce by static line overhead: 6 chars for line number and 6 for CRC.
+	// Reduce by static Line overhead: 6 chars for Line number and 6 for CRC.
 	l -= 12
 
 	// Reduce by the number of whitespaces in between data.

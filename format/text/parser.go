@@ -7,11 +7,14 @@ import (
 	"strconv"
 )
 
-// Represents a data line.
-type line struct {
-	N    uint64 // The line number.
-	Data string // The line data.
-	CRC  uint32 // The CRC for the line or if data is nil for the whole document.
+// Line represents a parsed data Line.
+type Line struct {
+	// N holds the line number.
+	N uint64
+	// Data holds the data payload part of the line.
+	Data string
+	// CRC holds the lines checksum or if data is nil, for the whole document.
+	CRC uint32
 }
 
 // Parser represents the text parser.
@@ -29,9 +32,9 @@ func NewParser(r io.Reader) *Parser {
 	return &Parser{s: NewScanner(r)}
 }
 
-// Parse parses a data line.
-func (p *Parser) Parse() (*line, error) {
-	ln := &line{}
+// Parse parses a data Line.
+func (p *Parser) Parse() (*Line, error) {
+	ln := &Line{}
 	var err error
 
 	if err = p.readNonDataLines(); err != nil {
@@ -70,7 +73,7 @@ func (p *Parser) readNonDataLines() error {
 func (p *Parser) readLineNumber() (uint64, error) {
 	tok, lit := p.scanIgnoreWhitespace()
 	if tok != LINO {
-		return 0, fmt.Errorf("found %q, expected line number", lit)
+		return 0, fmt.Errorf("found %q, expected Line number", lit)
 	}
 	n, err := strconv.ParseUint(lit, 10, 64)
 	if nil != err {
