@@ -1,8 +1,6 @@
 package base64_test
 
 import (
-	"bytes"
-	"io/ioutil"
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
@@ -20,10 +18,7 @@ var nameTests = []formatAssert.NameTest{
 	{255, "ridiculus", "ridiculus.base64.255"},
 }
 
-var testData = []struct {
-	decoded []byte
-	encoded string
-}{
+var dataTests = []formatAssert.DataTest{
 	{[]byte{0}, "AA=="},
 	{[]byte{0xff}, "/w=="},
 	{[]byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, "////////"},
@@ -43,29 +38,11 @@ func TestFormat_OutputFileName(t *testing.T) {
 }
 
 func TestFormat_Reader(t *testing.T) {
-	for _, test := range testData {
-		t.Run(test.encoded, func(t *testing.T) {
-			r, err := base64.New("").Reader(bytes.NewBufferString(test.encoded))
-			assert.Nil(t, err)
-			out, err := ioutil.ReadAll(r)
-			assert.NoError(t, err)
-			assert.Equal(t, test.decoded, out)
-		})
-	}
+	formatAssert.DataRead(t, dataTests, factory)
 }
 
 func TestFormat_Writer(t *testing.T) {
-	for _, test := range testData {
-		t.Run(test.encoded, func(t *testing.T) {
-			out := &bytes.Buffer{}
-			w, cl, err := base64.New("").Writer(out)
-			assert.Len(t, cl, 1)
-			assert.NoError(t, err)
-			w.Write(test.decoded)
-			cl[0].Close()
-			assert.Equal(t, test.encoded, out.String())
-		})
-	}
+	formatAssert.DataWrite(t, dataTests, factory)
 }
 
 func TestFormat_Name(t *testing.T) {

@@ -1,9 +1,7 @@
 package zbase32_test
 
 import (
-	"bytes"
 	"github.com/corvus-ch/horcrux/format"
-	"io/ioutil"
 	"testing"
 
 	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
@@ -20,18 +18,7 @@ var nameTests = []formatAssert.NameTest{
 	{255, "ridiculus", "ridiculus.zbase32.255"},
 }
 
-func factory(s string) format.Format {
-	return zbase32.New(s)
-}
-
-func TestFormat_OutputFileName(t *testing.T) {
-	formatAssert.Name(t, nameTests, factory)
-}
-
-var testData = []struct {
-	decoded []byte
-	encoded string
-}{
+var dataTests = []formatAssert.DataTest{
 	{[]byte{240, 191, 199}, "6n9hq"},
 	{[]byte{212, 122, 4}, "4t7ye"},
 	{[]byte{0xff}, "9h"},
@@ -46,30 +33,20 @@ var testData = []struct {
 	}, "ab3sr1ix8fhfnuzaeo75fkn3a7xh8udk6jsiiko"},
 }
 
+func factory(s string) format.Format {
+	return zbase32.New(s)
+}
+
+func TestFormat_OutputFileName(t *testing.T) {
+	formatAssert.Name(t, nameTests, factory)
+}
+
 func TestFormat_Reader(t *testing.T) {
-	for _, test := range testData {
-		t.Run(test.encoded, func(t *testing.T) {
-			r, err := zbase32.New("").Reader(bytes.NewBufferString(test.encoded))
-			assert.Nil(t, err)
-			out, err := ioutil.ReadAll(r)
-			assert.NoError(t, err)
-			assert.Equal(t, test.decoded, out)
-		})
-	}
+	formatAssert.DataRead(t, dataTests, factory)
 }
 
 func TestFormat_Writer(t *testing.T) {
-	for _, test := range testData {
-		t.Run(test.encoded, func(t *testing.T) {
-			out := &bytes.Buffer{}
-			w, cl, err := zbase32.New("").Writer(out)
-			assert.Len(t, cl, 1)
-			assert.NoError(t, err)
-			w.Write(test.decoded)
-			cl[0].Close()
-			assert.Equal(t, test.encoded, out.String())
-		})
-	}
+	formatAssert.DataWrite(t, dataTests, factory)
 }
 
 func TestFormat_Name(t *testing.T) {
