@@ -11,7 +11,7 @@ import (
 )
 
 // Default holds the name of the default format.
-const Default = raw.Name
+const Default = text.Name
 
 // Format describes the interface for the various input/output formats.
 type Format interface {
