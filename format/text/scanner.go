@@ -17,12 +17,12 @@ type scanner struct {
 	r *bufio.Reader
 }
 
-// Returns a new instance of scanner.
+// NewScanner returns a new instance of scanner.
 func NewScanner(r io.Reader) *scanner {
 	return &scanner{r: bufio.NewReader(r)}
 }
 
-// Returns the next token and literal value.
+// Scan returns the next token and literal value.
 func (s *scanner) Scan() (tok token, lit string) {
 	// Read the next rune.
 	ch := s.read()
