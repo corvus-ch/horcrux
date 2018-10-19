@@ -2,10 +2,11 @@ package format
 
 import (
 	"fmt"
-	"github.com/corvus-ch/horcrux/format/zbase32"
 	"io"
 
+	"github.com/corvus-ch/horcrux/format/base64"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/zbase32"
 )
 
 // Default holds the name of the default format.
@@ -34,6 +35,9 @@ func New(format, stem string) (Format, error) {
 
 	case zbase32.Name:
 		return zbase32.New(stem), nil
+
+	case base64.Name:
+		return base64.New(stem), nil
 
 	default:
 		return nil, fmt.Errorf("unknown format %s", format)

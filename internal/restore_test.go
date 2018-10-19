@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/bketelsen/logr"
+	"github.com/corvus-ch/horcrux/format/base64"
 	"github.com/corvus-ch/horcrux/format/raw"
 	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/internal"
@@ -84,6 +85,7 @@ func TestRestoreCommand_Format(t *testing.T) {
 		{"default", []string{"restore", file.Name()}, raw.Name},
 		{"raw", []string{"restore", "-f", "raw", file.Name()}, raw.Name},
 		{"zbase32", []string{"restore", "-f", "zbase32", file.Name()}, zbase32.Name},
+		{"base64", []string{"restore", "-f", "base64", file.Name()}, base64.Name},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

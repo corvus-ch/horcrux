@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/corvus-ch/horcrux/format"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,9 +13,6 @@ type NameTest struct {
 	Stem     string
 	Expected string
 }
-
-// FormatFactory describes a func used for instantiating a Format during assertions.
-type FormatFactory func(string) format.Format
 
 // Name asserts the correct behaviour of github.com/corvus-ch/horcrux/format.Format.OutputFileName().
 func Name(t *testing.T, tests []NameTest, factory FormatFactory) {
