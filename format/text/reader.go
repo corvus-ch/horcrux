@@ -16,6 +16,7 @@ type reader struct {
 	eof bool
 }
 
+// NewReader returns an text format reader instance.
 func NewReader(r io.Reader) io.Reader {
 	return &reader{p: NewParser(r), crc: crc24.New()}
 }
