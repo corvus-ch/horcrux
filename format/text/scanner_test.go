@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// Ensures the scanner can scan tokens correctly.
+// Ensures the Scanner can scan tokens correctly.
 func TestScannerScan(t *testing.T) {
 	var tests = []struct {
 		s   string

@@ -14,9 +14,9 @@ type line struct {
 	CRC  uint32 // The CRC for the line or if data is nil for the whole document.
 }
 
-// Represents a parser.
-type parser struct {
-	s   *scanner
+// Parser represents the text parser.
+type Parser struct {
+	s   *Scanner
 	buf struct {
 		tok token  // last read token
 		lit string // last read literal
@@ -24,13 +24,13 @@ type parser struct {
 	}
 }
 
-// NewParser returns a instance of parser.
-func NewParser(r io.Reader) *parser {
-	return &parser{s: NewScanner(r)}
+// NewParser returns a instance of Parser.
+func NewParser(r io.Reader) *Parser {
+	return &Parser{s: NewScanner(r)}
 }
 
 // Parse parses a data line.
-func (p *parser) Parse() (*line, error) {
+func (p *Parser) Parse() (*line, error) {
 	ln := &line{}
 	var err error
 
@@ -53,7 +53,7 @@ func (p *parser) Parse() (*line, error) {
 	return ln, nil
 }
 
-func (p *parser) readNonDataLines() error {
+func (p *Parser) readNonDataLines() error {
 	for {
 		tok, _ := p.scanIgnoreWhitespace()
 		if EOF == tok {
@@ -67,7 +67,7 @@ func (p *parser) readNonDataLines() error {
 	return nil
 }
 
-func (p *parser) readLineNumber() (uint64, error) {
+func (p *Parser) readLineNumber() (uint64, error) {
 	tok, lit := p.scanIgnoreWhitespace()
 	if tok != LINO {
 		return 0, fmt.Errorf("found %q, expected line number", lit)
@@ -80,7 +80,7 @@ func (p *parser) readLineNumber() (uint64, error) {
 	return n, nil
 }
 
-func (p *parser) readData() (string, error) {
+func (p *Parser) readData() (string, error) {
 	var data bytes.Buffer
 	for {
 		tok, lit := p.scanIgnoreWhitespace()
@@ -100,7 +100,7 @@ func (p *parser) readData() (string, error) {
 	return data.String(), nil
 }
 
-func (p *parser) readChecksum() (uint32, error) {
+func (p *Parser) readChecksum() (uint32, error) {
 	tok, lit := p.scanIgnoreWhitespace()
 	if CRC != tok {
 		return 0, fmt.Errorf("found %q, expected checksum", lit)
@@ -113,16 +113,16 @@ func (p *parser) readChecksum() (uint32, error) {
 	return uint32(n), nil
 }
 
-// Returns the next token from the underlying scanner.
+// Returns the next token from the underlying Scanner.
 // If a token has been unscanned then read that instead.
-func (p *parser) scan() (tok token, lit string) {
+func (p *Parser) scan() (tok token, lit string) {
 	// If we have a token on the buffer, then return it.
 	if p.buf.n != 0 {
 		p.buf.n = 0
 		return p.buf.tok, p.buf.lit
 	}
 
-	// Otherwise read the next token from the scanner.
+	// Otherwise read the next token from the Scanner.
 	tok, lit = p.s.Scan()
 
 	// Save it to the buffer in case we unscan later.
@@ -132,7 +132,7 @@ func (p *parser) scan() (tok token, lit string) {
 }
 
 // Scans the next non-whitespace token.
-func (p *parser) scanIgnoreWhitespace() (tok token, lit string) {
+func (p *Parser) scanIgnoreWhitespace() (tok token, lit string) {
 	tok, lit = p.scan()
 	if tok == WS {
 		tok, lit = p.scan()
@@ -141,4 +141,4 @@ func (p *parser) scanIgnoreWhitespace() (tok token, lit string) {
 }
 
 // Pushes the previously read token back onto the buffer.
-func (p *parser) unscan() { p.buf.n = 1 }
+func (p *Parser) unscan() { p.buf.n = 1 }

@@ -12,18 +12,18 @@ const (
 	crc  = "0123456789ABCDEF"                 // Valid crc characters
 )
 
-// Represents a lexical scanner.
-type scanner struct {
+// Scanner represents the lexical text scanner.
+type Scanner struct {
 	r *bufio.Reader
 }
 
-// NewScanner returns a new instance of scanner.
-func NewScanner(r io.Reader) *scanner {
-	return &scanner{r: bufio.NewReader(r)}
+// NewScanner returns a new instance of Scanner.
+func NewScanner(r io.Reader) *Scanner {
+	return &Scanner{r: bufio.NewReader(r)}
 }
 
 // Scan returns the next token and literal value.
-func (s *scanner) Scan() (tok token, lit string) {
+func (s *Scanner) Scan() (tok token, lit string) {
 	// Read the next rune.
 	ch := s.read()
 
@@ -49,7 +49,7 @@ func (s *scanner) Scan() (tok token, lit string) {
 }
 
 // Consumes the current rune and all contiguous whitespace.
-func (s *scanner) scanWhitespace() (tok token, lit string) {
+func (s *Scanner) scanWhitespace() (tok token, lit string) {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
@@ -71,7 +71,7 @@ func (s *scanner) scanWhitespace() (tok token, lit string) {
 }
 
 // Consumes the current rune and all contiguous ident runes.
-func (s *scanner) scanIdent() (tok token, lit string) {
+func (s *Scanner) scanIdent() (tok token, lit string) {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
@@ -110,7 +110,7 @@ func (s *scanner) scanIdent() (tok token, lit string) {
 
 // Reads the next rune from the buffered reader.
 // Returns the rune(0) if an error occurs (or io.EOF is returned).
-func (s *scanner) read() rune {
+func (s *Scanner) read() rune {
 	ch, _, err := s.r.ReadRune()
 	if err != nil {
 		return eof
@@ -119,7 +119,7 @@ func (s *scanner) read() rune {
 }
 
 // Places the previously read rune back on the reader.
-func (s *scanner) unread() { _ = s.r.UnreadRune() }
+func (s *Scanner) unread() { _ = s.r.UnreadRune() }
 
 // Checks if the rune is a whitespace.
 func isWhitespace(ch rune) bool { return ch == ' ' || ch == '\t' }

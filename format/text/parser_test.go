@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure the parser can parse strings into line ASTs.
+// Ensure the Parser can parse strings into line ASTs.
 func TestParserParse(t *testing.T) {
 	var tests = []struct {
 		name string

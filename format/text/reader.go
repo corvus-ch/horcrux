@@ -10,7 +10,7 @@ import (
 
 type reader struct {
 	io.Reader
-	p   *parser      // The underlying parser
+	p   *Parser      // The underlying Parser
 	crc crc24.Hash24 // The checksum of the whole document.
 	buf bytes.Buffer // buffered data waiting to read.
 	eof bool
