@@ -2,6 +2,7 @@ package format
 
 import (
 	"fmt"
+	"github.com/corvus-ch/horcrux/format/zbase32"
 	"io"
 
 	"github.com/corvus-ch/horcrux/format/raw"
@@ -30,6 +31,9 @@ func New(format, stem string) (Format, error) {
 	switch format {
 	case raw.Name:
 		return raw.New(stem), nil
+
+	case zbase32.Name:
+		return zbase32.New(stem), nil
 
 	default:
 		return nil, fmt.Errorf("unknown format %s", format)
