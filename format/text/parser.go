@@ -24,12 +24,12 @@ type parser struct {
 	}
 }
 
-// Returns a instance of parser.
+// NewParser returns a instance of parser.
 func NewParser(r io.Reader) *parser {
 	return &parser{s: NewScanner(r)}
 }
 
-// Parses a data line.
+// Parse parses a data line.
 func (p *parser) Parse() (*line, error) {
 	ln := &line{}
 	var tok token
