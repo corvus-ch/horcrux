@@ -33,10 +33,11 @@ func DataWrite(t *testing.T, tests []DataTest, factory FormatFactory) {
 		t.Run(test.Encoded, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			w, cl, err := factory("").Writer(out)
-			assert.Len(t, cl, 1)
 			assert.NoError(t, err)
 			w.Write(test.Decoded)
-			cl[0].Close()
+			for i := len(cl); i > 0; i-- {
+				cl[i-1].Close()
+			}
 			assert.Equal(t, test.Encoded, out.String())
 		})
 	}
