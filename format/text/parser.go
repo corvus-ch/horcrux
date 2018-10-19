@@ -32,42 +32,63 @@ func NewParser(r io.Reader) *parser {
 // Parse parses a data line.
 func (p *parser) Parse() (*line, error) {
 	ln := &line{}
-	var tok token
-	var lit string
-	var n uint64
 	var err error
 
-	// Read and discard any non line data.
+	if err = p.readNonDataLines(); err != nil {
+		return nil, err
+	}
+
+	if ln.N, err = p.readLineNumber(); err != nil {
+		return nil, err
+	}
+
+	if ln.Data, err = p.readData(); err != nil {
+		return nil, err
+	}
+
+	if ln.CRC, err = p.readChecksum(); err != nil {
+		return nil, err
+	}
+
+	return ln, nil
+}
+
+func (p *parser) readNonDataLines() error {
 	for {
-		tok, _ = p.scanIgnoreWhitespace()
+		tok, _ := p.scanIgnoreWhitespace()
 		if EOF == tok {
-			return nil, io.EOF
+			return io.EOF
 		} else if LINO == tok {
 			p.unscan()
 			break
 		}
 	}
 
-	// Read the line number.
-	tok, lit = p.scanIgnoreWhitespace()
-	if tok != LINO {
-		return nil, fmt.Errorf("found %q, expected line number", lit)
-	}
-	n, err = strconv.ParseUint(lit, 10, 64)
-	if nil != err {
-		return nil, fmt.Errorf("Faled to parse integer %q: %v", lit, err)
-	}
-	ln.N = n
+	return nil
+}
 
-	// Read all the line data.
+func (p *parser) readLineNumber() (uint64, error) {
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != LINO {
+		return 0, fmt.Errorf("found %q, expected line number", lit)
+	}
+	n, err := strconv.ParseUint(lit, 10, 64)
+	if nil != err {
+		return n, fmt.Errorf("faled to parse integer %q: %v", lit, err)
+	}
+
+	return n, nil
+}
+
+func (p *parser) readData() (string, error) {
 	var data bytes.Buffer
 	for {
-		tok, lit = p.scanIgnoreWhitespace()
+		tok, lit := p.scanIgnoreWhitespace()
 		if EOF == tok || EOL == tok {
-			return nil, fmt.Errorf("found %q, expected data or checksum", lit)
+			return "", fmt.Errorf("found %q, expected data or checksum", lit)
 		}
 		if DESC == tok {
-			return nil, fmt.Errorf("found %q, expected data or checksum", lit)
+			return "", fmt.Errorf("found %q, expected data or checksum", lit)
 		}
 		if CRC == tok {
 			p.unscan()
@@ -75,19 +96,21 @@ func (p *parser) Parse() (*line, error) {
 		}
 		data.WriteString(lit)
 	}
-	ln.Data = data.String()
 
-	// Read the lines CRC checksum.
-	if tok, lit := p.scanIgnoreWhitespace(); CRC != tok {
-		return nil, fmt.Errorf("found %q, expected checksum", lit)
+	return data.String(), nil
+}
+
+func (p *parser) readChecksum() (uint32, error) {
+	tok, lit := p.scanIgnoreWhitespace()
+	if CRC != tok {
+		return 0, fmt.Errorf("found %q, expected checksum", lit)
 	}
-	n, err = strconv.ParseUint(lit, 16, 32)
+	n, err := strconv.ParseUint(lit, 16, 32)
 	if nil != err {
-		return nil, fmt.Errorf("Faled to parse integer %q: %v", lit, err)
+		return 0, fmt.Errorf("faled to parse integer %q: %v", lit, err)
 	}
-	ln.CRC = uint32(n)
 
-	return ln, nil
+	return uint32(n), nil
 }
 
 // Returns the next token from the underlying scanner.
