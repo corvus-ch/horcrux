@@ -17,6 +17,7 @@ type writer struct {
 	crc  crc24.Hash24 // The checksum
 }
 
+// NewWriter returns an text format writer instance.
 func NewWriter(w io.Writer, f *Format) io.WriteCloser {
 	return &writer{
 		w:   w,
