@@ -27,7 +27,7 @@ func (r *reader) Read(p []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	if r.buf.Len() == 0 && !r.eof {
+	for r.buf.Len() < len(p) && !r.eof {
 		data, err := r.readLine()
 		if nil != err && io.EOF != err {
 			return n, err
@@ -39,7 +39,7 @@ func (r *reader) Read(p []byte) (int, error) {
 	}
 
 	for n < len(p) && r.buf.Len() > 0 {
-		n += copy(p[n:], r.buf.Next(min(r.buf.Len(), len(p))))
+		n += copy(p[n:], r.buf.Next(len(p)))
 	}
 
 	if r.eof == true && r.buf.Len() == 0 {
