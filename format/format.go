@@ -2,6 +2,7 @@ package format
 
 import (
 	"fmt"
+	"github.com/corvus-ch/horcrux/format/qr"
 	"github.com/corvus-ch/horcrux/format/text"
 	"io"
 
@@ -39,6 +40,9 @@ func New(format, stem string) (Format, error) {
 
 	case base64.Name:
 		return base64.New(stem), nil
+
+	case qr.Name:
+		return qr.New(stem), nil
 
 	case text.Name:
 		return text.New(stem), nil

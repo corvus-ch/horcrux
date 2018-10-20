@@ -42,6 +42,13 @@ Restore a GPG key (builds on top of the above example):
     paperkey --pubring=public.gpg --secrets=paperkey.bin --input-type=raw --output=secret.gpg
     diff "${KEY_ID}.gpg" secret.gpg
 
+## Known issues
+
+The QR code format provide a limited feature set:
+
+* It only works for input data of size 2119 bytes or less.
+* It can not be used to recover the data.
+
 ## Milestones
 
 * [x] Basic application
