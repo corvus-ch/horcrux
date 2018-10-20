@@ -26,7 +26,11 @@ func Create(cfg Config, log logr.Logger) (result error) {
 	}
 
 	factory := format.NewFactory(formats, cfg.Encrypt(), log)
-	defer factory.Close()
+	defer func() {
+		if err := factory.Close(); err != nil && result == nil {
+			result = err
+		}
+	}()
 
 	writer, err := shamir.NewWriter(cfg.Parts(), cfg.Threshold(), factory.Create)
 	if nil != err {
