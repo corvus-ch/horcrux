@@ -1,9 +1,6 @@
 package raw_test
 
 import (
-	"bytes"
-	"io/ioutil"
-	"math/rand"
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
@@ -30,31 +27,13 @@ func TestFormat_OutputFileName(t *testing.T) {
 }
 
 func TestFormat_Reader(t *testing.T) {
-	data := randomData()
-	r, err := raw.New("").Reader(bytes.NewBuffer(data))
-	assert.Nil(t, err)
-	out, err := ioutil.ReadAll(r)
-	assert.NoError(t, err)
-	assert.Equal(t, data, out)
+	formatAssert.DataRead(t, factory, ".raw")
 }
 
 func TestFormat_Writer(t *testing.T) {
-	out := &bytes.Buffer{}
-	w, cl, err := raw.New("").Writer(out)
-	assert.Nil(t, cl)
-	assert.NoError(t, err)
-	data := randomData()
-	w.Write(data)
-	assert.Equal(t, data, out.Bytes())
+	formatAssert.DataWrite(t, factory, ".raw")
 }
 
 func TestFormat_Name(t *testing.T) {
 	assert.Equal(t, raw.Name, raw.New("").Name())
-}
-
-func randomData() []byte {
-	data := make([]byte, rand.Intn(1024))
-	rand.Read(data)
-
-	return data
 }
