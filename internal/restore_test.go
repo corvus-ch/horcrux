@@ -1,6 +1,7 @@
 package internal_test
 
 import (
+	"github.com/corvus-ch/horcrux/format/text"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -82,7 +83,7 @@ func TestRestoreCommand_Format(t *testing.T) {
 		args   []string
 		format string
 	}{
-		{"default", []string{"restore", file.Name()}, raw.Name},
+		{"default", []string{"restore", file.Name()}, text.Name},
 		{"raw", []string{"restore", "-f", "raw", file.Name()}, raw.Name},
 		{"zbase32", []string{"restore", "-f", "zbase32", file.Name()}, zbase32.Name},
 		{"base64", []string{"restore", "-f", "base64", file.Name()}, base64.Name},

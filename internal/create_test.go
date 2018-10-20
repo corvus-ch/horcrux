@@ -111,8 +111,8 @@ func TestCreateCommand_Formats(t *testing.T) {
 		args        []string
 		outputNames []string
 	}{
-		{"default", []string{"create"}, []string{"part.raw.042"}},
-		{"stem", []string{"create", "-o", "foo"}, []string{"foo.raw.042"}},
+		{"default", []string{"create"}, []string{"part.txt.042"}},
+		{"stem", []string{"create", "-o", "foo"}, []string{"foo.txt.042"}},
 		{"single", []string{"create", "-f", "raw"}, []string{"part.raw.042"}},
 		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}, []string{"part.raw.042", "part.zbase32.042"}},
 	}

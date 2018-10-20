@@ -32,8 +32,8 @@ build: c.out ${package_name}
 
 .PHONY: test
 test: c.out test.bin ${package_name}
-	./${package_name} create test.bin && ls test.raw.* > /dev/null
-	./${package_name} restore -o result.bin test.raw.* && diff test.bin result.bin > /dev/null
+	./${package_name} create test.bin && ls test.txt.* > /dev/null
+	./${package_name} restore -o result.bin test.txt.* && diff test.bin result.bin > /dev/null
 
 c.out: main.cov $(addsuffix pkg.cov,${test_pkgs})
 	find . -name '*.cov' -exec gocoverutil -coverprofile=$@ merge {} +

@@ -34,19 +34,20 @@ Backup a GPG key:
     gpg --export-secret-key "${KEY_ID}" > "${KEY_ID}.gpg"
     paperkey --secret-key="${KEY_ID}.gpg" --output-type raw --output="${KEY_ID}.bin"
     horcrux create "${KEY_ID}.bin"
-    ls *.raw.* # Those are the files you can now place at your backup locations.
+    ls *.txt.* # Those are the files you can now place at your backup locations.
 
 Restore a GPG key (builds on top of the above example):
 
-    horcrux restore -o paperkey.bin *.raw.* # For this example only two of the three files are required.
+    horcrux restore -o paperkey.bin *.txt.* # For this example only two of the three files are required.
     paperkey --pubring=public.gpg --secrets=paperkey.bin --input-type=raw --output=secret.gpg
     diff "${KEY_ID}.gpg" secret.gpg
 
 ## Milestones
 
 * [x] Basic application
-* [ ] Plain text format for print and easy scan/ocr
+* [x] Plain text format for print and easy scan/ocr
 * [ ] QR Code format for easier scanning
+* [ ] Template system for custom output
 
 ## Contributing and license
 
