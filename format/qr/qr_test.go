@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
@@ -39,7 +41,9 @@ func TestFormat_Writer(t *testing.T) {
 	formatAssert.DataWrite(t, factory, ".png")
 
 	t.Run("too much data", func(t *testing.T) {
-		w, cl, err := factory("").Writer(ioutil.Discard)
+		dir, err := ioutil.TempDir("", "fail")
+		defer os.RemoveAll(dir)
+		w, cl, err := factory(filepath.Join(dir, "fail")).Writer(255)
 		assert.NoError(t, err)
 		r := io.LimitReader(rand.Reader, 2120)
 		_, err = io.Copy(w, r)

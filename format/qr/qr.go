@@ -3,6 +3,7 @@ package qr
 import (
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/boombuler/barcode/qr"
 	"github.com/corvus-ch/zbase32"
@@ -36,15 +37,17 @@ func (f *Format) OutputFileName(x byte) string {
 	return fmt.Sprintf("%s.%03d.png", f.stem, x)
 }
 
-// Writer creates a new Format writer using the given writer as output.
-func (f *Format) Writer(out io.Writer) (io.Writer, []io.Closer, error) {
-	cs := make([]io.Closer, 2)
-	w := NewWriter(out, f)
-	cs[0] = w
-	enc := zbase32.NewEncoder(encoding, w)
-	cs[1] = enc
+// Writer creates a new QR code format writer for the part identified by x.
+func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
+	file, err := os.Create(f.OutputFileName(x))
+	if nil != err {
+		return nil, nil, err
+	}
 
-	return enc, cs, nil
+	w := NewWriter(file, f)
+	enc := zbase32.NewEncoder(encoding, w)
+
+	return enc, []io.Closer{file, w, enc}, nil
 }
 
 // Reader creates a new Format reader using the given reader as input.

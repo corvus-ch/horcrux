@@ -3,6 +3,7 @@ package raw
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 // Name holds the name of the Format.
@@ -23,9 +24,14 @@ func (f *Format) OutputFileName(x byte) string {
 	return fmt.Sprintf("%s.raw.%03d", f.stem, x)
 }
 
-// Writer creates a new Format writer using the given writer as output.
-func (f *Format) Writer(out io.Writer) (io.Writer, []io.Closer, error) {
-	return out, nil, nil
+// Writer creates a new raw format writer for the part identified by x.
+func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
+	file, err := os.Create(f.OutputFileName(x))
+	if nil != err {
+		return nil, nil, err
+	}
+
+	return file, []io.Closer{file}, nil
 }
 
 // Reader creates a new Format reader using the given reader as input.
