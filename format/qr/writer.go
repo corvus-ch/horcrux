@@ -6,6 +6,7 @@ import (
 	"github.com/boombuler/barcode"
 	"image/png"
 	"io"
+	"os"
 
 	"github.com/boombuler/barcode/qr"
 )
@@ -13,29 +14,58 @@ import (
 type writer struct {
 	io.WriteCloser
 	f   *Format
-	w   io.Writer
 	buf bytes.Buffer
+	x   byte
+	n   int
 }
 
 // NewWriter returns a qr code format writer instance.
-func NewWriter(w io.Writer, f *Format) io.WriteCloser {
-	return &writer{w: w, f: f}
+func NewWriter(f *Format, x byte) io.WriteCloser {
+	return &writer{f: f, x: x}
 }
 
-func (w *writer) Write(p []byte) (n int, err error) {
-	return w.buf.Write(p)
+func (w *writer) Write(p []byte) (int, error) {
+	n, err := w.buf.Write(p)
+	if err != nil {
+		return n, err
+	}
+
+	for w.buf.Len() >= 3391 {
+		if err := w.createImage(); err != nil {
+			return n, err
+		}
+	}
+
+	return n, nil
 }
 
 func (w *writer) Close() error {
-	qrCode, err := qr.Encode(w.buf.String(), w.f.Level, qr.AlphaNumeric)
+	if w.buf.Len() > 0 {
+		return w.createImage()
+	}
+
+	return nil
+}
+
+func (w *writer) createImage() error {
+	data := w.buf.Next(3391)
+	code, err := qr.Encode(string(data), w.f.Level, qr.AlphaNumeric)
 	if err != nil {
 		return fmt.Errorf("failed to create qr code: %v", err)
 	}
 
-	qrCode, err = barcode.Scale(qrCode, w.f.Size, w.f.Size)
+	code, err = barcode.Scale(code, w.f.Size, w.f.Size)
 	if err != nil {
 		return fmt.Errorf("failed to scale qr code: %v", err)
 	}
 
-	return png.Encode(w.w, qrCode)
+	// create the output file
+	w.n++
+	file, err := os.Create(fmt.Sprintf("%s.%03d.%d.png", w.f.Stem, w.x, w.n))
+	if err != nil {
+		return fmt.Errorf("failed to open output file: %v", err)
+	}
+	defer file.Close()
+
+	return png.Encode(file, code)
 }
