@@ -44,16 +44,15 @@ Restore a GPG key (builds on top of the above example):
 
 ## Known issues
 
-The QR code format provide a limited feature set:
-
-* It only works for input data of size 2119 bytes or less.
-* It can not be used to recover the data.
+The QR code format provide a limited feature set and can not be used to recover
+the data. A tool like `zbarimg` from the [zbar libary][zbar] can be used to
+scan the qr codes so it can be read by the zbase32 format.
 
 ## Milestones
 
 * [x] Basic application
 * [x] Plain text format for print and easy scan/ocr
-* [ ] QR Code format for easier scanning
+* [x] QR Code format for easier scanning
 * [ ] Template system for custom output
 
 ## Contributing and license
@@ -64,3 +63,4 @@ to this project, see [CONTRIBUTING.md].
 [CONTRIBUTING.md]: https://github.com/corvus-ch/horcrux/blob/master/CONTRIBUTING.md
 [MIT]: https://github.com/corvus-ch/horcrux/blob/master/LICENSE
 [paperkey]: http://www.jabberwocky.com/software/paperkey/
+[zbar]: https://zbar.sourceforge.io
