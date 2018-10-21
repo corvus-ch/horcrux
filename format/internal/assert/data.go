@@ -2,6 +2,7 @@ package assert
 
 import (
 	"crypto/rand"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,6 +17,9 @@ import (
 
 // FormatFactory describes a func used for instantiating a Format during assertions.
 type FormatFactory func(string) format.Format
+
+// OutputFileNames describes a func used to get the output file names only known to the calling test case.
+type OutputFileNames func(file string, x byte) []string
 
 // DataRead asserts a formats read behaviour.
 func DataRead(t *testing.T, factory FormatFactory, suffix string) {
@@ -42,7 +46,7 @@ func DataRead(t *testing.T, factory FormatFactory, suffix string) {
 }
 
 // DataWrite asserts a formats write behaviour.
-func DataWrite(t *testing.T, factory FormatFactory, suffix string) {
+func DataWrite(t *testing.T, factory FormatFactory, suffix string, outfilenames OutputFileNames) {
 	goldie.FileNameSuffix = suffix
 	files, err := filepath.Glob(filepath.Join(goldie.FixtureDir, "*.bin"))
 	if err != nil {
@@ -71,13 +75,16 @@ func DataWrite(t *testing.T, factory FormatFactory, suffix string) {
 				err = cl[i-1].Close()
 				assert.NoError(t, err)
 			}
-			t.Log(filepath.Glob(filepath.Join(dir, name+"*")))
-			file, err := os.Open(subject.OutputFileName(x))
-			if err != nil {
-				t.Fatal(err)
+			for _, outfile := range outfilenames(file, x) {
+				file, err := os.Open(filepath.Join(dir, outfile))
+				if err != nil {
+					t.Fatal(err)
+				}
+				out, _ := ioutil.ReadAll(file)
+				goldenName := strings.Replace(strings.Replace(outfile, suffix, "", -1), fmt.Sprintf(".%03d", x), "", -1)
+				t.Log(goldenName)
+				goldie.Assert(t, goldenName, out)
 			}
-			out, _ := ioutil.ReadAll(file)
-			goldie.Assert(t, name, out)
 		})
 	}
 }

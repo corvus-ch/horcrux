@@ -2,9 +2,7 @@ package qr_test
 
 import (
 	"bytes"
-	"crypto/rand"
-	"io"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,22 +23,21 @@ func TestFormat_Reader(t *testing.T) {
 }
 
 func TestFormat_Writer(t *testing.T) {
-	formatAssert.DataWrite(t, factory, ".png")
-
-	t.Run("too much data", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "fail")
-		defer os.RemoveAll(dir)
-		w, cl, err := factory(filepath.Join(dir, "fail")).Writer(255)
-		assert.NoError(t, err)
-		r := io.LimitReader(rand.Reader, 2120)
-		_, err = io.Copy(w, r)
-		for i := len(cl); i > 0; i-- {
-			e := cl[i-1].Close()
-			if e != nil {
-				err = e
-			}
+	formatAssert.DataWrite(t, factory, ".png", func(file string, x byte) []string {
+		base := filepath.Base(file)
+		name := base[0:len(base) - len(filepath.Ext(base))]
+		f, err := os.Stat(file)
+		if err != nil {
+			return []string{}
 		}
-		assert.Error(t, err)
+		num := (f.Size() / 2120) + 1
+
+		names := make([]string, num)
+		for i := int64(0); i < num; i++ {
+			names[i] = fmt.Sprintf("%s.%03d.%d.png", name, x, i+1)
+		}
+
+		return names
 	})
 }
 
