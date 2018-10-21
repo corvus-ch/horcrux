@@ -7,6 +7,9 @@ import (
 
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/create"
+	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/text"
+	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/stretchr/testify/assert"
@@ -107,24 +110,26 @@ func TestCreateCommand_Input(t *testing.T) {
 
 func TestCreateCommand_Formats(t *testing.T) {
 	tests := []struct {
-		name        string
-		args        []string
-		outputNames []string
+		name    string
+		args    []string
+		formats []string
 	}{
-		{"default", []string{"create"}, []string{"part.txt.042"}},
-		{"stem", []string{"create", "-o", "foo"}, []string{"foo.txt.042"}},
-		{"single", []string{"create", "-f", "raw"}, []string{"part.raw.042"}},
-		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}, []string{"part.raw.042", "part.zbase32.042"}},
+		{"default", []string{"create"}, []string{text.Name}},
+		{"single", []string{"create", "-f", "raw"}, []string{raw.Name}},
+		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}, []string{raw.Name, zbase32.Name}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config, _ logr.Logger) error {
 				formats, err := cfg.Formats()
 				if err != nil {
-					t.Skip("Formats not yet implemented")
+					t.Fatal(err)
 				}
-				for i, outputName := range test.outputNames {
-					assert.Equal(t, outputName, formats[i].OutputFileName(42))
+				if len(test.formats) != len(formats) {
+					t.Fatalf("expected %d formats, got %d", len(test.formats), len(formats))
+				}
+				for i, name := range test.formats {
+					assert.Equal(t, name, formats[i].Name())
 				}
 				return nil
 			})

@@ -9,21 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var nameTests = []formatAssert.NameTest{
-	{0, "mollis", "mollis.raw.000"},
-	{1, "commodo", "commodo.raw.001"},
-	{42, "pellentesque", "pellentesque.raw.042"},
-	{181, "fringilla", "fringilla.raw.181"},
-	{254, "venenatis", "venenatis.raw.254"},
-	{255, "ridiculus", "ridiculus.raw.255"},
-}
-
 func factory(s string) format.Format {
 	return raw.New(s)
-}
-
-func TestFormat_OutputFileName(t *testing.T) {
-	formatAssert.Name(t, nameTests, factory)
 }
 
 func TestFormat_Reader(t *testing.T) {

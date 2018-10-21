@@ -15,21 +15,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var nameTests = []formatAssert.NameTest{
-	{0, "mollis", "mollis.000.png"},
-	{1, "commodo", "commodo.001.png"},
-	{42, "pellentesque", "pellentesque.042.png"},
-	{181, "fringilla", "fringilla.181.png"},
-	{254, "venenatis", "venenatis.254.png"},
-	{255, "ridiculus", "ridiculus.255.png"},
-}
-
 func factory(s string) format.Format {
 	return qr.New(s)
-}
-
-func TestFormat_OutputFileName(t *testing.T) {
-	formatAssert.Name(t, nameTests, factory)
 }
 
 func TestFormat_Reader(t *testing.T) {
