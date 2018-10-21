@@ -22,7 +22,7 @@ func TestFormat_Reader(t *testing.T) {
 func TestFormat_Writer(t *testing.T) {
 	formatAssert.DataWrite(t, factory, ".zbase32", func(file string, x byte) []string {
 		base := filepath.Base(file)
-		name := base[0:len(base) - len(filepath.Ext(base))]
+		name := base[0 : len(base)-len(filepath.Ext(base))]
 		return []string{fmt.Sprintf("%s.zbase32.%03d", name, x)}
 	})
 }
