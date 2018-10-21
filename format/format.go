@@ -19,8 +19,8 @@ type Format interface {
 	// OutputFileName returns the file name for the given x.
 	OutputFileName(x byte) string
 
-	// Writer creates a new format writer using the given writer as output.
-	Writer(w io.Writer) (io.Writer, []io.Closer, error)
+	// Writer creates a new format writer for the part identified by x
+	Writer(x byte) (io.Writer, []io.Closer, error)
 
 	// Reader creates a new format reader using the given reader as input.
 	Reader(r io.Reader) (io.Reader, error)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 
 	"crypto/rand"
 	"github.com/bketelsen/logr"
@@ -31,10 +30,14 @@ func (f *Factory) Create(x byte) (io.Writer, error) {
 	ws := make([]io.Writer, len(f.formats))
 
 	var i int
-	var err error
 	for _, format := range f.formats {
-		if ws[i], err = f.create(x, format); err != nil {
+		w, c, err := format.Writer(x)
+		if err != nil {
 			return nil, err
+		}
+		ws[i] = w
+		if nil != c {
+			f.c = append(f.c, c...)
 		}
 		i++
 	}
@@ -44,23 +47,6 @@ func (f *Factory) Create(x byte) (io.Writer, error) {
 	}
 
 	return f.encryptWriter(io.MultiWriter(ws...), x)
-}
-
-func (f *Factory) create(x byte, format Format) (io.Writer, error) {
-	file, err := os.Create(format.OutputFileName(x))
-	if nil != err {
-		return nil, err
-	}
-	f.c = append(f.c, file)
-	w, c, err := format.Writer(file)
-	if nil != err {
-		return nil, err
-	}
-	if nil != c {
-		f.c = append(f.c, c...)
-	}
-
-	return w, nil
 }
 
 func (f *Factory) encryptWriter(w io.Writer, x byte) (io.Writer, error) {

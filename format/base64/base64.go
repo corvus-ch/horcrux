@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"os"
 )
 
 // Name holds the name of the Format.
@@ -24,11 +25,16 @@ func (f *Format) OutputFileName(x byte) string {
 	return fmt.Sprintf("%s.base64.%03d", f.Stem, x)
 }
 
-// Writer creates a new Format writer using the given writer as output.
-func (f *Format) Writer(out io.Writer) (io.Writer, []io.Closer, error) {
-	enc := base64.NewEncoder(base64.StdEncoding, out)
+// Writer creates a new base64 format writer for the part identified by x.
+func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
+	file, err := os.Create(f.OutputFileName(x))
+	if nil != err {
+		return nil, nil, err
+	}
 
-	return enc, []io.Closer{enc}, nil
+	enc := base64.NewEncoder(base64.StdEncoding, file)
+
+	return enc, []io.Closer{file, enc}, nil
 }
 
 // Reader creates a new Format reader using the given reader as input.
