@@ -11,12 +11,13 @@ import (
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
+	"github.com/corvus-ch/horcrux/meta"
 	"github.com/sebdah/goldie"
 	"github.com/stretchr/testify/assert"
 )
 
 // FormatFactory describes a func used for instantiating a Format during assertions.
-type FormatFactory func(string) format.Format
+type FormatFactory func(meta.Input) format.Format
 
 // OutputFileNames describes a func used to get the output file names only known to the calling test case.
 type OutputFileNames func(file string, x byte) []string
@@ -36,7 +37,7 @@ func DataRead(t *testing.T, factory FormatFactory, suffix string) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			r, err := factory("").Reader(f)
+			r, err := factory(meta.NewDummyInputMock()).Reader(f)
 			assert.Nil(t, err)
 			out, err := ioutil.ReadAll(r)
 			assert.NoError(t, err)
@@ -66,7 +67,7 @@ func DataWrite(t *testing.T, factory FormatFactory, suffix string, outfilenames 
 			if err != nil {
 				t.Fatal(err)
 			}
-			subject := factory(filepath.Join(dir, name))
+			subject := factory(meta.NewInputMock(filepath.Join(dir, name)))
 			w, cl, err := subject.Writer(x)
 			assert.NoError(t, err)
 			_, err = io.Copy(w, f)

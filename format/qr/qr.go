@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/boombuler/barcode/qr"
+	"github.com/corvus-ch/horcrux/meta"
 	"github.com/corvus-ch/zbase32"
 )
 
@@ -16,29 +16,25 @@ const alphabet = "YBNDRFG8EJKMCPQXOT1UWISZA345H769"
 var encoding = zbase32.NewEncoding(alphabet)
 
 // New creates a new Format of type raw.
-func New(stem string) *Format {
+func New(input meta.Input) *Format {
 	return &Format{
-		Stem:  stem,
-		Level: qr.M,
-		Size:  500,
+		in: input,
 	}
 }
 
 // Format represents the raw type format.
 type Format struct {
-	Stem  string
-	Level qr.ErrorCorrectionLevel
-	Size  int
+	in meta.Input
 }
 
 // OutputFileName returns the file name for the given x.
 func (f *Format) OutputFileName(x byte) string {
-	return fmt.Sprintf("%s.png.%03d", f.Stem, x)
+	return fmt.Sprintf("%s.png.%03d", f.in.Stem(), x)
 }
 
 // Writer creates a new QR code format writer for the part identified by x.
 func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
-	w := NewWriter(f, x)
+	w := NewWriter(f.in, x)
 	enc := zbase32.NewEncoder(encoding, w)
 
 	return enc, []io.Closer{w, enc}, nil

@@ -2,13 +2,14 @@ package format
 
 import (
 	"fmt"
-	"github.com/corvus-ch/horcrux/format/qr"
-	"github.com/corvus-ch/horcrux/format/text"
 	"io"
 
 	"github.com/corvus-ch/horcrux/format/base64"
+	"github.com/corvus-ch/horcrux/format/qr"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/text"
 	"github.com/corvus-ch/horcrux/format/zbase32"
+	"github.com/corvus-ch/horcrux/meta"
 )
 
 // Default holds the name of the default format.
@@ -30,22 +31,22 @@ type Format interface {
 }
 
 // New creates a new format object.
-func New(format, stem string) (Format, error) {
+func New(format string, input meta.Input) (Format, error) {
 	switch format {
 	case raw.Name:
-		return raw.New(stem), nil
+		return raw.New(input), nil
 
 	case zbase32.Name:
-		return zbase32.New(stem), nil
+		return zbase32.New(input), nil
 
 	case base64.Name:
-		return base64.New(stem), nil
+		return base64.New(input), nil
 
 	case qr.Name:
-		return qr.New(stem), nil
+		return qr.New(input), nil
 
 	case text.Name:
-		return text.New(stem), nil
+		return text.New(input), nil
 
 	default:
 		return nil, fmt.Errorf("unknown format %s", format)

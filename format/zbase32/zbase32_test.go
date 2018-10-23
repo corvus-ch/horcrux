@@ -8,11 +8,12 @@ import (
 	"github.com/corvus-ch/horcrux/format"
 	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
 	"github.com/corvus-ch/horcrux/format/zbase32"
+	"github.com/corvus-ch/horcrux/meta"
 	"github.com/stretchr/testify/assert"
 )
 
-func factory(s string) format.Format {
-	return zbase32.New(s)
+func factory(i meta.Input) format.Format {
+	return zbase32.New(i)
 }
 
 func TestFormat_Reader(t *testing.T) {
@@ -28,5 +29,5 @@ func TestFormat_Writer(t *testing.T) {
 }
 
 func TestFormat_Name(t *testing.T) {
-	assert.Equal(t, zbase32.Name, zbase32.New("").Name())
+	assert.Equal(t, zbase32.Name, zbase32.New(nil).Name())
 }

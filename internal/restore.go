@@ -55,7 +55,7 @@ func (c *restoreCommand) Execute(_ *kingpin.ParseContext) error {
 }
 
 func (c *restoreCommand) Format() (format.Format, error) {
-	return format.New(c.format, "")
+	return format.New(c.format, nil)
 }
 
 func (c *restoreCommand) Decrypt() bool {

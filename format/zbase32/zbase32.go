@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/corvus-ch/horcrux/meta"
 	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
@@ -12,18 +13,18 @@ import (
 const Name = "zbase32"
 
 // New creates a new Format of type zbase32.
-func New(stem string) *Format {
-	return &Format{Stem: stem}
+func New(input meta.Input) *Format {
+	return &Format{input: input}
 }
 
 // Format represents the zbase32 type format.
 type Format struct {
-	Stem string
+	input meta.Input
 }
 
 // OutputFileName returns the file name for the given x.
 func (f *Format) OutputFileName(x byte) string {
-	return fmt.Sprintf("%s.zbase32.%03d", f.Stem, x)
+	return fmt.Sprintf("%s.zbase32.%03d", f.input.Stem(), x)
 }
 
 // Writer creates a new zbase32 format writer for the part identified by x.
