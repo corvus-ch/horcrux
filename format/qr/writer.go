@@ -7,11 +7,14 @@ import (
 	"io"
 	"math"
 	"os"
+	"strings"
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/corvus-ch/horcrux/meta"
 )
+
+const indexLength = 7
 
 type writer struct {
 	io.WriteCloser
@@ -52,8 +55,10 @@ func (w *writer) Close() error {
 }
 
 func (w *writer) createImage() error {
-	data := w.buf.Next(w.ChunkSize())
-	code, err := qr.Encode(string(data), w.level, qr.AlphaNumeric)
+	var data strings.Builder
+	data.WriteString(fmt.Sprintf("%03d:%d::", w.x, w.n))
+	data.Write(w.buf.Next(w.ChunkSize()))
+	code, err := qr.Encode(data.String(), w.level, qr.AlphaNumeric)
 	if err != nil {
 		return fmt.Errorf("failed to create qr code: %v", err)
 	}
@@ -80,7 +85,7 @@ func (w *writer) ChunkSize() int {
 		return w.chunk
 	}
 
-	capacity := w.Capacity()
+	capacity := w.Capacity() - indexLength
 	size := float64(w.in.Size() * 8 / 5)
 	chunks := math.Ceil(size / float64(capacity))
 	w.chunk = int(math.Ceil(size / chunks))

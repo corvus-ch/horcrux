@@ -33,7 +33,7 @@ func TestFormat_Writer(t *testing.T) {
 		if err != nil {
 			return []string{}
 		}
-		num := (f.Size() / 2120) + 1
+		num := f.Size() / 2115
 
 		names := make([]string, num)
 		for i := int64(0); i < num; i++ {
