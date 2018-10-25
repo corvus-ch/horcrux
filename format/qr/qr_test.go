@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	code "github.com/boombuler/barcode/qr"
 	"github.com/corvus-ch/horcrux/format"
 	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
 	"github.com/corvus-ch/horcrux/format/qr"
@@ -33,10 +34,9 @@ func TestFormat_Writer(t *testing.T) {
 		if err != nil {
 			return []string{}
 		}
-		num := f.Size() / 2115
-
+		num := qr.NumChunks(qr.Capacity(code.M), f.Size())
 		names := make([]string, num)
-		for i := int64(0); i < num; i++ {
+		for i := 0; i < num; i++ {
 			names[i] = fmt.Sprintf("%s.%03d.%d.png", name, x, i+1)
 		}
 

@@ -81,16 +81,8 @@ func (w *writer) createImage() error {
 
 // ChunkSize returns the number of encoded bytes written to a single qr code image.
 func (w *writer) ChunkSize() int {
-	if w.chunk != 0 {
-		return w.chunk
-	}
-
-	capacity := w.Capacity() - indexLength
-	size := float64(w.in.Size() * 8 / 5)
-	chunks := math.Ceil(size / float64(capacity))
-	w.chunk = int(math.Ceil(size / chunks))
-	if w.chunk > capacity || w.chunk < 0 {
-		w.chunk = capacity
+	if w.chunk == 0 {
+		w.chunk = ChunkSize(w.Capacity(), w.in.Size())
 	}
 
 	return w.chunk
@@ -98,14 +90,37 @@ func (w *writer) ChunkSize() int {
 
 // Capacity returns the number of bytes which fit into a single qr code image.
 func (w *writer) Capacity() int {
-	switch w.level {
+	return Capacity(w.level)
+}
+
+// NumChunks returns the number of images required to encode the data.
+func NumChunks(capacity int, size int64) int {
+	return int(math.Ceil(float64(size*8) / 5 / float64(capacity)))
+}
+
+// ChunkSize returns the number of bytes fitting into a single qr code image.
+func ChunkSize(capacity int, size int64) int {
+	chunks := NumChunks(capacity, size)
+	chunk := int(math.Ceil(float64(size*8) / 5 / float64(chunks)))
+	fmt.Println(chunk)
+	if chunk > capacity || chunk < 0 {
+		chunk = capacity
+	}
+
+	fmt.Println(chunk)
+	return chunk
+}
+
+// Capacity returns the number of bytes which fit into a single qr code image.
+func Capacity(l qr.ErrorCorrectionLevel) int {
+	switch l {
 	case qr.L:
-		return 4296
+		return 4296 - indexLength
 	case qr.M:
-		return 3391
+		return 3391 - indexLength
 	case qr.Q:
-		return 2420
+		return 2420 - indexLength
 	default:
-		return 1852
+		return 1852 - indexLength
 	}
 }
