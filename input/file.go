@@ -1,6 +1,7 @@
 package input
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,12 +18,13 @@ func NewFileInput(name, stem string) Input {
 		stem = strings.TrimSuffix(b, filepath.Ext(b))
 	}
 
-	return &file{fi, stem}
+	return &file{fi, stem, createChecksums(name)}
 }
 
 type file struct {
-	fileInfo os.FileInfo
-	stem     string
+	fileInfo   os.FileInfo
+	stem       string
+	checksumms *Hash
 }
 
 func (i *file) Name() string {
@@ -53,4 +55,19 @@ func (i *file) Size() int64 {
 	}
 
 	return i.fileInfo.Size()
+}
+
+func (i *file) Checksums() *Hash {
+	return i.checksumms
+}
+
+func createChecksums(name string) *Hash {
+	cs := NewHash()
+	defer cs.Close()
+	f, _ := os.Open(name)
+	defer f.Close()
+	if f != nil {
+		io.Copy(cs, f)
+	}
+	return cs
 }
