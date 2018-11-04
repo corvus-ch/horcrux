@@ -54,7 +54,10 @@ func TestWriterWrite(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.data, func(t *testing.T) {
 			buf.Reset()
-			w := NewWriter(&buf, &Format{LineLength: 42})
+			w, err := NewWriter(&buf, &Format{LineLength: 42})
+			if err != nil {
+				t.Fatal(err)
+			}
 			w.Write([]byte(test.data))
 			w.Close()
 			assert.Equal(t, test.text, buf.String())
@@ -69,7 +72,10 @@ func TestWriter_Write_LineLength(t *testing.T) {
 	for i := 14; i < len(data)+13; i++ {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			buf.Reset()
-			w := NewWriter(&buf, &Format{LineLength: uint8(i)})
+			w, err := NewWriter(&buf, &Format{LineLength: uint8(i)})
+			if err != nil {
+				t.Fatal(err)
+			}
 			w.Write(data)
 			w.Close()
 			goldie.Assert(t, fmt.Sprintf("line_length_%d", i), buf.Bytes())

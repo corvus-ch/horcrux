@@ -35,7 +35,11 @@ func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
 		return nil, nil, err
 	}
 
-	w := NewWriter(file, f)
+	w, err := NewWriter(file, f)
+	if err != nil {
+		return nil, []io.Closer{file}, err
+	}
+
 	enc := zbase32.NewEncoder(zbase32.StdEncoding, w)
 
 	return enc, []io.Closer{file, w, enc}, nil
@@ -49,11 +53,4 @@ func (f *Format) Reader(r io.Reader) (io.Reader, error) {
 // Name returns the formats name.
 func (f *Format) Name() string {
 	return Name
-}
-
-func min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
 }
