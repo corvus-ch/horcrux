@@ -3,12 +3,11 @@ package internal
 import (
 	"io"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/create"
 	"github.com/corvus-ch/horcrux/format"
+	"github.com/corvus-ch/horcrux/input"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -29,6 +28,9 @@ type createCommand struct {
 	parts     int
 	stemFlag  string
 	threshold int
+
+	// internal
+	info input.Input
 }
 
 func RegisterCreateCommand(app *kingpin.Application, log logr.Logger, action createAction) *createCommand {
@@ -72,11 +74,26 @@ func (c *createCommand) Input() (io.Reader, error) {
 	return os.Open(c.input)
 }
 
+func (c *createCommand) InputInfo() input.Input {
+	if c.info != nil {
+		return c.info
+	}
+
+	if c.input == "-" || c.input == "" {
+		c.info = input.NewStreamInput(c.stemFlag)
+	} else {
+
+		c.info = input.NewFileInput(c.input, c.stemFlag)
+	}
+
+	return c.info
+}
+
 func (c *createCommand) Formats() ([]format.Format, error) {
 	formats := make([]format.Format, len(c.formats))
 
 	for i, f := range c.formats {
-		ff, err := format.New(f, c)
+		ff, err := format.New(f, c.InputInfo())
 		if err != nil {
 			return nil, err
 		}
@@ -96,29 +113,4 @@ func (c *createCommand) Parts() int {
 
 func (c *createCommand) Threshold() int {
 	return c.threshold
-}
-
-func (c *createCommand) Stem() string {
-	if c.stemFlag != "" {
-		return c.stemFlag
-	}
-
-	file := c.input
-
-	if file == "-" || file == "" {
-		file = "part"
-	}
-
-	b := filepath.Base(file)
-
-	return strings.TrimSuffix(b, filepath.Ext(b))
-}
-
-func (c *createCommand) Size() int64 {
-	s, err := os.Stat(c.input)
-	if err != nil {
-		return -1
-	}
-
-	return s.Size()
 }

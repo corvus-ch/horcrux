@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
@@ -13,13 +13,13 @@ import (
 const Name = "text"
 
 // New creates a new format of type Text.
-func New(input meta.Input) *Format {
+func New(input input.Input) *Format {
 	return &Format{input: input, LineLength: 72}
 }
 
 // Format represents the text type format.
 type Format struct {
-	input      meta.Input
+	input      input.Input
 	LineLength uint8
 }
 

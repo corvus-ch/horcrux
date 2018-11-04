@@ -11,7 +11,7 @@ import (
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 )
 
 const indexLength = 7
@@ -20,14 +20,14 @@ type writer struct {
 	io.WriteCloser
 	buf   bytes.Buffer
 	chunk int
-	in    meta.Input
+	in    input.Input
 	level qr.ErrorCorrectionLevel
 	n     int
 	x     byte
 }
 
 // NewWriter returns a qr code format writer instance.
-func NewWriter(in meta.Input, x byte) io.WriteCloser {
+func NewWriter(in input.Input, x byte) io.WriteCloser {
 	return &writer{in: in, x: x, level: qr.M}
 }
 

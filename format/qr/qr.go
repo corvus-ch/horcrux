@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/corvus-ch/zbase32"
 )
 
@@ -16,7 +16,7 @@ const alphabet = "YBNDRFG8EJKMCPQXOT1UWISZA345H769"
 var encoding = zbase32.NewEncoding(alphabet)
 
 // New creates a new Format of type raw.
-func New(input meta.Input) *Format {
+func New(input input.Input) *Format {
 	return &Format{
 		in: input,
 	}
@@ -24,7 +24,7 @@ func New(input meta.Input) *Format {
 
 // Format represents the raw type format.
 type Format struct {
-	in meta.Input
+	in input.Input
 }
 
 // OutputFileName returns the file name for the given x.

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"text/template"
 
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/martinlindhe/crc24"
 )
 
@@ -42,17 +43,21 @@ type line struct {
 }
 
 type templateData struct {
+	Input input.Input
 	Lines chan line
 }
 
 // NewWriter returns an text format writer instance.
 func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
 	tw := &writer{
-		w:    w,
-		buf:  make([]byte, bufLen(f.LineLength)),
-		crc:  crc24.New(),
-		data: templateData{make(chan line)},
-		t:    template.New("text"),
+		w:   w,
+		buf: make([]byte, bufLen(f.LineLength)),
+		crc: crc24.New(),
+		data: templateData{
+			Input: f.input,
+			Lines: make(chan line),
+		},
+		t: template.New("text"),
 	}
 
 	if err := tw.parse(); err != nil {

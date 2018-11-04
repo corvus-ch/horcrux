@@ -9,7 +9,7 @@ import (
 	"github.com/corvus-ch/horcrux/format/raw"
 	"github.com/corvus-ch/horcrux/format/text"
 	"github.com/corvus-ch/horcrux/format/zbase32"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 )
 
 // Default holds the name of the default format.
@@ -31,7 +31,7 @@ type Format interface {
 }
 
 // New creates a new format object.
-func New(format string, input meta.Input) (Format, error) {
+func New(format string, input input.Input) (Format, error) {
 	switch format {
 	case raw.Name:
 		return raw.New(input), nil
