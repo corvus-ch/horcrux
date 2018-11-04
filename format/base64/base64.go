@@ -5,24 +5,26 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/corvus-ch/horcrux/meta"
 )
 
 // Name holds the name of the Format.
 const Name = "base64"
 
 // New creates a new Format of type base64.
-func New(stem string) *Format {
-	return &Format{Stem: stem}
+func New(input meta.Input) *Format {
+	return &Format{input: input}
 }
 
 // Format represents the base64 type format.
 type Format struct {
-	Stem string
+	input meta.Input
 }
 
 // OutputFileName returns the file name for the given x.
 func (f *Format) OutputFileName(x byte) string {
-	return fmt.Sprintf("%s.base64.%03d", f.Stem, x)
+	return fmt.Sprintf("%s.base64.%03d", f.input.Stem(), x)
 }
 
 // Writer creates a new base64 format writer for the part identified by x.

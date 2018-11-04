@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/corvus-ch/horcrux/meta"
 	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
@@ -12,19 +13,19 @@ import (
 const Name = "text"
 
 // New creates a new format of type Text.
-func New(stem string) *Format {
-	return &Format{Stem: stem, LineLength: 72}
+func New(input meta.Input) *Format {
+	return &Format{input: input, LineLength: 72}
 }
 
 // Format represents the text type format.
 type Format struct {
+	input      meta.Input
 	LineLength uint8
-	Stem       string
 }
 
 // OutputFileName returns the file name for the given x.
 func (f *Format) OutputFileName(x byte) string {
-	return fmt.Sprintf("%s.txt.%03d", f.Stem, x)
+	return fmt.Sprintf("%s.txt.%03d", f.input.Stem(), x)
 }
 
 // Writer creates a new text format writer for the part identified by x.

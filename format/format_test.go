@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			f, err := format.New(test.name, "")
+			f, err := format.New(test.name, nil)
 			assert.Equal(t, test.err, err)
 			if f != nil {
 				assert.Equal(t, test.name, f.Name())

@@ -75,9 +75,8 @@ func (c *createCommand) Input() (io.Reader, error) {
 func (c *createCommand) Formats() ([]format.Format, error) {
 	formats := make([]format.Format, len(c.formats))
 
-	stem := c.stem()
 	for i, f := range c.formats {
-		ff, err := format.New(f, stem)
+		ff, err := format.New(f, c)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +98,7 @@ func (c *createCommand) Threshold() int {
 	return c.threshold
 }
 
-func (c *createCommand) stem() string {
+func (c *createCommand) Stem() string {
 	if c.stemFlag != "" {
 		return c.stemFlag
 	}
@@ -113,4 +112,13 @@ func (c *createCommand) stem() string {
 	b := filepath.Base(file)
 
 	return strings.TrimSuffix(b, filepath.Ext(b))
+}
+
+func (c *createCommand) Size() int64 {
+	s, err := os.Stat(c.input)
+	if err != nil {
+		return -1
+	}
+
+	return s.Size()
 }

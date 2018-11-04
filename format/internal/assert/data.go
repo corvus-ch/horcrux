@@ -1,7 +1,6 @@
 package assert
 
 import (
-	"crypto/rand"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,12 +10,15 @@ import (
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
+	"github.com/corvus-ch/horcrux/meta"
 	"github.com/sebdah/goldie"
 	"github.com/stretchr/testify/assert"
 )
 
+const x = byte(42)
+
 // FormatFactory describes a func used for instantiating a Format during assertions.
-type FormatFactory func(string) format.Format
+type FormatFactory func(meta.Input) format.Format
 
 // OutputFileNames describes a func used to get the output file names only known to the calling test case.
 type OutputFileNames func(file string, x byte) []string
@@ -36,7 +38,7 @@ func DataRead(t *testing.T, factory FormatFactory, suffix string) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			r, err := factory("").Reader(f)
+			r, err := factory(meta.NewDummyInputMock()).Reader(f)
 			assert.Nil(t, err)
 			out, err := ioutil.ReadAll(r)
 			assert.NoError(t, err)
@@ -56,7 +58,6 @@ func DataWrite(t *testing.T, factory FormatFactory, suffix string, outfilenames 
 		basename := filepath.Base(file)
 		name := strings.TrimSuffix(basename, filepath.Ext(basename))
 		t.Run(name, func(t *testing.T) {
-			x := randomByte(t)
 			f, err := os.Open(file)
 			if err != nil {
 				t.Fatal(err)
@@ -66,34 +67,47 @@ func DataWrite(t *testing.T, factory FormatFactory, suffix string, outfilenames 
 			if err != nil {
 				t.Fatal(err)
 			}
-			subject := factory(filepath.Join(dir, name))
-			w, cl, err := subject.Writer(x)
+
+			w, cl, err := factory(newInputMock(t, f, filepath.Join(dir, name))).Writer(x)
 			assert.NoError(t, err)
-			_, err = io.Copy(w, f)
+			io.Copy(w, f)
 			assert.NoError(t, err)
-			for i := len(cl); i > 0; i-- {
-				err = cl[i-1].Close()
-				assert.NoError(t, err)
-			}
+			assertClose(t, cl)
 			for _, outfile := range outfilenames(file, x) {
-				file, err := os.Open(filepath.Join(dir, outfile))
-				if err != nil {
-					t.Fatal(err)
-				}
-				out, _ := ioutil.ReadAll(file)
-				goldenName := strings.Replace(strings.Replace(outfile, suffix, "", -1), fmt.Sprintf(".%03d", x), "", -1)
-				t.Log(goldenName)
-				goldie.Assert(t, goldenName, out)
+				assertFileContent(t, dir, outfile, suffix)
 			}
 		})
 	}
 }
 
-func randomByte(t *testing.T) byte {
-	b := make([]byte, 1)
-	if _, err := rand.Read(b); err != nil {
-		t.Fatal(err)
-	}
+func newInputMock(t *testing.T, file *os.File, stem string) meta.Input {
+	im := new(meta.InputMock)
 
-	return b[0]
+	im.On("Stem").Maybe().Return(stem)
+
+	var size int64
+	fs, _ := file.Stat()
+	if fs != nil {
+		size = fs.Size()
+	}
+	im.On("Size").Maybe().Return(size)
+
+	return im
+}
+
+func assertFileContent(t *testing.T, dir, name, suffix string) {
+	file, err := os.Open(filepath.Join(dir, name))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	out, _ := ioutil.ReadAll(file)
+	goldenName := strings.Replace(strings.Replace(name, suffix, "", -1), fmt.Sprintf(".%03d", x), "", -1)
+	goldie.Assert(t, goldenName, out)
+}
+
+func assertClose(t *testing.T, cs []io.Closer) {
+	for i := len(cs); i > 0; i-- {
+		assert.NoError(t, cs[i-1].Close())
+	}
 }

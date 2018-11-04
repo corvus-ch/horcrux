@@ -4,24 +4,26 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/corvus-ch/horcrux/meta"
 )
 
 // Name holds the name of the Format.
 const Name = "raw"
 
 // New creates a new Format of type raw.
-func New(stem string) *Format {
-	return &Format{stem: stem}
+func New(input meta.Input) *Format {
+	return &Format{input: input}
 }
 
 // Format represents the raw type format.
 type Format struct {
-	stem string
+	input meta.Input
 }
 
 // OutputFileName returns the file name for the given x.
 func (f *Format) OutputFileName(x byte) string {
-	return fmt.Sprintf("%s.raw.%03d", f.stem, x)
+	return fmt.Sprintf("%s.raw.%03d", f.input.Stem(), x)
 }
 
 // Writer creates a new raw format writer for the part identified by x.
