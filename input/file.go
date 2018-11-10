@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// NewFileInput creates an instance of Input representing a file input.
 func NewFileInput(name, stem string) Input {
 	var fi os.FileInfo
 	if len(name) > 0 {
@@ -27,6 +28,7 @@ type file struct {
 	checksumms *Hash
 }
 
+// Name returns the files name without its path.
 func (i *file) Name() string {
 	if i.fileInfo == nil {
 		return ""
@@ -35,6 +37,7 @@ func (i *file) Name() string {
 	return i.fileInfo.Name()
 }
 
+// Path returns the files path including the file name.
 func (i *file) Path() string {
 	if i.fileInfo == nil {
 		return ""
@@ -45,6 +48,9 @@ func (i *file) Path() string {
 	return p
 }
 
+// Path returns the inputs stem.
+// By default, this is files name without the extension or whatever was
+// set by the output option.
 func (i *file) Stem() string {
 	return i.stem
 }
@@ -57,6 +63,8 @@ func (i *file) Size() int64 {
 	return i.fileInfo.Size()
 }
 
+// Checksums returns a set containing the files checksums calculated
+// with several algorithms.
 func (i *file) Checksums() *Hash {
 	return i.checksumms
 }
