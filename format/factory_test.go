@@ -8,7 +8,7 @@ import (
 
 	"github.com/corvus-ch/horcrux/format"
 	"github.com/corvus-ch/horcrux/format/raw"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/stretchr/testify/assert"
 )
@@ -50,8 +50,7 @@ func TestFactory_Create(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			log.Buf().Reset()
-			i := new(meta.InputMock)
-			i.On("Stem").Return(filepath.Join(tmp, test.name))
+			i := input.NewStreamInput(filepath.Join(tmp, test.name))
 			r := raw.New(i)
 			f := format.NewFactory([]format.Format{r}, test.encrypted, log)
 			defer func() {

@@ -15,7 +15,7 @@ import (
 	action "github.com/corvus-ch/horcrux/create"
 	"github.com/corvus-ch/horcrux/format"
 	"github.com/corvus-ch/horcrux/format/raw"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 			dir := createDir(t)
 			defer os.RemoveAll(dir)
 
-			f := raw.New(meta.NewInputMock(outputStem(dir, raw.Name)))
+			f := raw.New(input.NewStreamInput(outputStem(dir, raw.Name)))
 			cfg := NewConfig(t.Name(), f, test.encrypted)
 			log := buffered.New(1)
 
@@ -77,7 +77,8 @@ var errorTests = []struct {
 
 	{"processing pipeline", func(t *testing.T, cfg *Config, dir string) {
 		cfg.On("Input").Return(bytes.NewBufferString(t.Name()), nil)
-		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(meta.NewInputMock(outputStem(dir, raw.Name)))}, nil)
+		cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(outputStem(dir, raw.Name)))
+		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(input.NewStreamInput(outputStem(dir, raw.Name)))}, nil)
 		cfg.On("Parts").Return(3)
 		cfg.On("Threshold").Return(4)
 		cfg.On("Encrypt").Return(false)
@@ -86,7 +87,8 @@ var errorTests = []struct {
 	{"copy", func(t *testing.T, cfg *Config, dir string) {
 		f, _ := os.Open(t.Name())
 		cfg.On("Input").Return(f, nil)
-		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(meta.NewInputMock(outputStem(dir, raw.Name)))}, nil)
+		cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(outputStem(dir, raw.Name)))
+		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(input.NewStreamInput(outputStem(dir, raw.Name)))}, nil)
 		cfg.On("Parts").Return(3)
 		cfg.On("Threshold").Return(2)
 		cfg.On("Encrypt").Return(false)

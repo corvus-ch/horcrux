@@ -17,6 +17,7 @@
 test.*
 horcrux
 result.bin
+text.tmpl
 
 # Release artifacts
 /dist/

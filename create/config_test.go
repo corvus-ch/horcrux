@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/corvus-ch/horcrux/format"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -12,9 +13,10 @@ type Config struct {
 	mock.Mock
 }
 
-func NewConfig(input string, f format.Format, encrypt bool) *Config {
+func NewConfig(name string, f format.Format, encrypt bool) *Config {
 	cfg := &Config{}
-	cfg.On("Input").Maybe().Return(bytes.NewBufferString(input), nil)
+	cfg.On("Input").Maybe().Return(bytes.NewBufferString(name), nil)
+	cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(""))
 	cfg.On("Formats").Maybe().Return([]format.Format{f}, nil)
 	cfg.On("Encrypt").Maybe().Return(encrypt)
 	cfg.On("Parts").Maybe().Return(3)
@@ -31,6 +33,12 @@ func (c *Config) Input() (io.Reader, error) {
 	}
 
 	return r.(io.Reader), args.Error(1)
+}
+
+func (c *Config) InputInfo() input.Input {
+	args := c.Called()
+
+	return args.Get(0).(input.Input)
 }
 
 func (c *Config) Formats() ([]format.Format, error) {

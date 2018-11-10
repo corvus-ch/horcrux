@@ -37,6 +37,18 @@ func Create(cfg Config, log logr.Logger) (result error) {
 		return fmt.Errorf("failed to create processing pipeline: %v", err)
 	}
 
+	if hashW, ok := cfg.InputInfo().(io.Writer); ok {
+		writer = io.MultiWriter(hashW, writer)
+	}
+
+	if hashC, ok := cfg.InputInfo().(io.Closer); ok {
+		defer func() {
+			if err := hashC.Close(); err != nil && result == nil {
+				result = err
+			}
+		}()
+	}
+
 	if _, err := io.Copy(writer, reader); nil != err {
 		result = fmt.Errorf("failed to process data: %v", err)
 	}

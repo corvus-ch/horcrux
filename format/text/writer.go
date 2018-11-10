@@ -1,11 +1,27 @@
 package text
 
 import (
-	"fmt"
+	"bytes"
 	"io"
+	"strings"
+	"sync"
+	"text/template"
 
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/martinlindhe/crc24"
 )
+
+const defaultTemplate = `
+{{- block "header" .}}{{end -}}
+{{- block "lines" .Lines -}}
+{{range .}}
+  {{- block "line" . -}}
+    {{printf "% 4d" .Number }}: {{if .Data}}{{ .Data }} {{end}}{{printf "%06X" .CRC }}
+  {{- end}}
+{{end}}
+{{- end -}}
+{{- block "footer" .}}{{end -}}
+`
 
 type writer struct {
 	io.WriteCloser
@@ -15,15 +31,60 @@ type writer struct {
 	buf  []byte       // buffered data waiting to be encoded
 	nbuf int          // number of bytes in buf
 	crc  crc24.Hash24 // The checksum
+	t    *template.Template
+	data templateData
+	wg   sync.WaitGroup
+}
+
+type line struct {
+	Number int
+	Data   string
+	CRC    uint32
+}
+
+type templateData struct {
+	Input input.Input
+	Lines chan line
 }
 
 // NewWriter returns an text format writer instance.
-func NewWriter(w io.Writer, f *Format) io.WriteCloser {
-	return &writer{
+func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
+	tw := &writer{
 		w:   w,
 		buf: make([]byte, bufLen(f.LineLength)),
 		crc: crc24.New(),
+		data: templateData{
+			Input: f.input,
+			Lines: make(chan line),
+		},
+		t: template.New("text"),
 	}
+
+	if err := tw.parse(); err != nil {
+		return nil, err
+	}
+
+	go tw.render()
+
+	return tw, nil
+}
+
+func (w *writer) parse() error {
+	if _, err := w.t.Parse(defaultTemplate); err != nil {
+		return err
+	}
+
+	if _, err := w.t.ParseGlob("text.tmpl"); err != nil && !strings.Contains(err.Error(), "pattern matches no files") {
+		return err
+	}
+
+	return nil
+}
+
+func (w *writer) render() {
+	w.wg.Add(1)
+	w.err = w.t.Execute(w.w, w.data)
+	w.wg.Done()
 }
 
 func (w *writer) Write(p []byte) (n int, err error) {
@@ -44,9 +105,7 @@ func (w *writer) Write(p []byte) (n int, err error) {
 			return
 		}
 		w.crc.Write(w.buf)
-		if err := w.writeLine(w.buf); nil != err {
-			return n, w.err
-		}
+		w.writeLine(w.buf)
 		w.nbuf = 0
 	}
 
@@ -54,9 +113,7 @@ func (w *writer) Write(p []byte) (n int, err error) {
 	for len(p) > len(w.buf) {
 		nn := len(w.buf)
 		w.crc.Write(p[:nn])
-		if err := w.writeLine(p[:nn]); nil != err {
-			return n, w.err
-		}
+		w.writeLine(p[:nn])
 		n += nn
 		p = p[nn:]
 	}
@@ -73,40 +130,24 @@ func (w *writer) Write(p []byte) (n int, err error) {
 func (w *writer) Close() error {
 	if w.nbuf > 0 {
 		w.crc.Write(w.buf[:w.nbuf])
-		if err := w.writeLine(w.buf[:w.nbuf]); nil != err {
-			return err
-		}
+		w.writeLine(w.buf[:w.nbuf])
 	}
-	w.n++
-	if _, err := w.w.Write([]byte(fmt.Sprintf("% 4d: %v", w.n, formatCRC24(w.crc)))); nil != err {
-		return fmt.Errorf("Failed to write checksum: %v", err)
-	}
-	w.crc.Reset()
-	return nil
+	w.writeLine(nil)
+	close(w.data.Lines)
+	w.wg.Wait()
+	return w.err
 }
 
-func (w *writer) writeLine(data []byte) error {
+func (w *writer) writeLine(data []byte) {
 	w.n++
-	if _, err := w.w.Write([]byte(fmt.Sprintf("% 4d: ", w.n))); nil != err {
-		return fmt.Errorf("Failed to write Line index: %v", err)
-	}
-	for i := 0; i < len(data); i += 5 {
-		j := min(i+5, len(data))
-		if _, err := w.w.Write(data[i:j]); nil != err {
-			return fmt.Errorf("Failed to write Line data: %v", err)
-		}
-		if _, err := w.w.Write([]byte{' '}); nil != err {
-			return fmt.Errorf("Failed to write Line data: %v", err)
+	var buf bytes.Buffer
+	for i, r := range data {
+		buf.WriteByte(r)
+		if i%5 == 4 && i != len(data)-1 {
+			buf.WriteRune(' ')
 		}
 	}
-	if _, err := w.w.Write([]byte(formatCRC24(w.crc))); nil != err {
-		return fmt.Errorf("Failed to write Line checksum: %v", err)
-	}
-	return nil
-}
-
-func formatCRC24(hash crc24.Hash24) string {
-	return fmt.Sprintf("%06X\n", hash.Sum24())
+	w.data.Lines <- line{Number: w.n, Data: buf.String(), CRC: w.crc.Sum24()}
 }
 
 func bufLen(l uint8) int {

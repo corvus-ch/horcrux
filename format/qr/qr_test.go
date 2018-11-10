@@ -11,17 +11,15 @@ import (
 	"github.com/corvus-ch/horcrux/format"
 	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
 	"github.com/corvus-ch/horcrux/format/qr"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/stretchr/testify/assert"
 )
 
-func factory(i meta.Input) format.Format {
+func factory(i input.Input) format.Format {
 	return qr.New(i)
 }
 
 func TestFormat_Reader(t *testing.T) {
-	i := new(meta.InputMock)
-	i.On("Size").Return(int64(-1))
 	_, err := factory(nil).Reader(bytes.NewReader([]byte{}))
 	assert.Error(t, err)
 }

@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
@@ -13,13 +13,13 @@ import (
 const Name = "zbase32"
 
 // New creates a new Format of type zbase32.
-func New(input meta.Input) *Format {
+func New(input input.Input) *Format {
 	return &Format{input: input}
 }
 
 // Format represents the zbase32 type format.
 type Format struct {
-	input meta.Input
+	input input.Input
 }
 
 // OutputFileName returns the file name for the given x.

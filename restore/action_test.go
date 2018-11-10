@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format/raw"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	action "github.com/corvus-ch/horcrux/restore"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/pkg/errors"
@@ -34,7 +34,7 @@ func TestRestore(t *testing.T) {
 			defer os.RemoveAll(dir)
 			files := split(t, dir, raw.Name, t.Name(), test.encrypted)
 
-			cfg, buf := NewConfig(files, raw.New(meta.NewInputMock("raw")), test.encrypted)
+			cfg, buf := NewConfig(files, raw.New(input.NewStreamInput("raw")), test.encrypted)
 			prompt := NewPasswordProvider(files)
 			log := buffered.New(1)
 
@@ -89,7 +89,7 @@ var errorTests = []struct {
 		buf := &bytes.Buffer{}
 		cfg.On("Output").Maybe().Return(buf, nil)
 		cfg.On("FileNames").Return(files[2:])
-		cfg.On("Format").Return(raw.New(meta.NewInputMock("stem")), nil)
+		cfg.On("Format").Return(raw.New(input.NewStreamInput("stem")), nil)
 		cfg.On("Decrypt").Return(false)
 
 		return buf, fmt.Sprintf("INFO Reading file %s\n", files[2]), files
@@ -99,7 +99,7 @@ var errorTests = []struct {
 		buf := &bytes.Buffer{}
 		cfg.On("Output").Maybe().Return(nil, errors.New("output error"))
 		cfg.On("FileNames").Return(files[1:])
-		cfg.On("Format").Return(raw.New(meta.NewInputMock("stem")), nil)
+		cfg.On("Format").Return(raw.New(input.NewStreamInput("stem")), nil)
 		cfg.On("Decrypt").Return(false)
 
 		return buf, fmt.Sprintf("INFO Reading file %s\nINFO Reading file %s\n", files[1], files[2]), files
@@ -109,7 +109,7 @@ var errorTests = []struct {
 		buf := &bytes.Buffer{}
 		cfg.On("Output").Maybe().Return(buf, nil)
 		cfg.On("FileNames").Return(files)
-		cfg.On("Format").Return(raw.New(meta.NewInputMock("stem")), nil)
+		cfg.On("Format").Return(raw.New(input.NewStreamInput("stem")), nil)
 		cfg.On("Decrypt").Return(true)
 
 		return buf, fmt.Sprintf("INFO Reading file %s\n", files[0]), nil

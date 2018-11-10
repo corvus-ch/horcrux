@@ -8,11 +8,11 @@ import (
 	"github.com/corvus-ch/horcrux/format"
 	"github.com/corvus-ch/horcrux/format/base64"
 	formatAssert "github.com/corvus-ch/horcrux/format/internal/assert"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/stretchr/testify/assert"
 )
 
-func factory(i meta.Input) format.Format {
+func factory(i input.Input) format.Format {
 	return base64.New(i)
 }
 

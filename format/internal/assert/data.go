@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/corvus-ch/horcrux/format"
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 	"github.com/sebdah/goldie"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,7 +18,7 @@ import (
 const x = byte(42)
 
 // FormatFactory describes a func used for instantiating a Format during assertions.
-type FormatFactory func(meta.Input) format.Format
+type FormatFactory func(input.Input) format.Format
 
 // OutputFileNames describes a func used to get the output file names only known to the calling test case.
 type OutputFileNames func(file string, x byte) []string
@@ -38,7 +38,7 @@ func DataRead(t *testing.T, factory FormatFactory, suffix string) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			r, err := factory(meta.NewDummyInputMock()).Reader(f)
+			r, err := factory(input.NewStreamInput("")).Reader(f)
 			assert.Nil(t, err)
 			out, err := ioutil.ReadAll(r)
 			assert.NoError(t, err)
@@ -80,19 +80,8 @@ func DataWrite(t *testing.T, factory FormatFactory, suffix string, outfilenames 
 	}
 }
 
-func newInputMock(t *testing.T, file *os.File, stem string) meta.Input {
-	im := new(meta.InputMock)
-
-	im.On("Stem").Maybe().Return(stem)
-
-	var size int64
-	fs, _ := file.Stat()
-	if fs != nil {
-		size = fs.Size()
-	}
-	im.On("Size").Maybe().Return(size)
-
-	return im
+func newInputMock(t *testing.T, file *os.File, stem string) input.Input {
+	return input.NewFileInput(file.Name(), stem)
 }
 
 func assertFileContent(t *testing.T, dir, name, suffix string) {

@@ -6,20 +6,20 @@ import (
 	"io"
 	"os"
 
-	"github.com/corvus-ch/horcrux/meta"
+	"github.com/corvus-ch/horcrux/input"
 )
 
 // Name holds the name of the Format.
 const Name = "base64"
 
 // New creates a new Format of type base64.
-func New(input meta.Input) *Format {
+func New(input input.Input) *Format {
 	return &Format{input: input}
 }
 
 // Format represents the base64 type format.
 type Format struct {
-	input meta.Input
+	input input.Input
 }
 
 // OutputFileName returns the file name for the given x.
