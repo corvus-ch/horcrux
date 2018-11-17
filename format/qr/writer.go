@@ -102,12 +102,10 @@ func NumChunks(capacity int, size int64) int {
 func ChunkSize(capacity int, size int64) int {
 	chunks := NumChunks(capacity, size)
 	chunk := int(math.Ceil(float64(size*8) / 5 / float64(chunks)))
-	fmt.Println(chunk)
 	if chunk > capacity || chunk < 0 {
 		chunk = capacity
 	}
 
-	fmt.Println(chunk)
 	return chunk
 }
 
