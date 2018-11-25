@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/corvus-ch/horcrux/input"
 	"github.com/corvus-ch/horcrux/output"
@@ -62,16 +61,12 @@ func (w *writer) Close() error {
 
 func (w *writer) createImage() error {
 	var data strings.Builder
+	mode := qr.AlphaNumeric
 	data.WriteString(w.index())
 	data.Write(w.buf.Next(w.ChunkSize()))
-	code, err := qr.Encode(data.String(), w.level, qr.AlphaNumeric)
+	code, err := qr.Encode(data.String(), w.level, mode)
 	if err != nil {
 		return fmt.Errorf("failed to create qr code: %v", err)
-	}
-
-	code, err = barcode.Scale(code, 500, 500)
-	if err != nil {
-		return fmt.Errorf("failed to scale qr code: %v", err)
 	}
 
 	// create the output file
@@ -85,7 +80,14 @@ func (w *writer) createImage() error {
 
 	err = png.Encode(file, code)
 	if err == nil {
-		w.out.Append(Name, path, nil)
+		meta := make(map[string]interface{}, 2)
+		meta["Dx"] = code.Bounds().Dx()
+		meta["Dy"] = code.Bounds().Dy()
+		meta["errorCorrectionLevel"] = w.level
+		meta["mode"] = mode
+		meta["modules"] = fmt.Sprintf("%dx%d", code.Bounds().Dx(), code.Bounds().Dy())
+		meta["version"] = (code.Bounds().Dx()-21)/4 + 1
+		w.out.Append(Name, path, meta)
 	}
 
 	return err
