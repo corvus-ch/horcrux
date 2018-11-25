@@ -37,12 +37,12 @@ type writer struct {
 }
 
 // NewWriter returns an text format writer instance.
-func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
+func NewWriter(w io.Writer, f *Format, data *Data) (io.WriteCloser, error) {
 	tw := &writer{
 		w:    w,
 		buf:  make([]byte, bufLen(f.LineLength)),
 		crc:  crc24.New(),
-		data: NewData(f.input, make(chan Line)),
+		data: data,
 		t:    template.New("text"),
 	}
 
