@@ -10,6 +10,7 @@ import (
 	"github.com/corvus-ch/horcrux/format/text"
 	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/input"
+	"github.com/corvus-ch/horcrux/output"
 )
 
 // Default holds the name of the default format.
@@ -21,7 +22,7 @@ type Format interface {
 	OutputFileName(x byte) string
 
 	// Writer creates a new format writer for the part identified by x
-	Writer(x byte) (io.Writer, []io.Closer, error)
+	Writer(x byte, out output.Output) (io.Writer, []io.Closer, error)
 
 	// Reader creates a new format reader using the given reader as input.
 	Reader(r io.Reader) (io.Reader, error)

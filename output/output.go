@@ -1,65 +1,23 @@
 package output
 
-import (
-	"os"
-	"path/filepath"
+type Output map[string]chan File
 
-	"github.com/corvus-ch/horcrux/hash"
-)
-
-// File represents an output file.
-type File interface {
-	// Name returns the base name of the output file.
-	Name() string
-
-	// Path returns the absolute path of the output file.
-	Path() string
-
-	// Size returns the size of the output file in bytes.
-	Size() int64
-
-	// Checksum returns the inputs checksum calculated with the given algorithm.
-	Checksum(alg string) (string, error)
+func NewOutput() Output {
+	return Output{}
 }
 
-type file struct {
-	path string
-	size int64
-	hash *hash.Hash
-}
-
-func New(path string) File {
-	return &file{
-		path: path,
-		size: -1,
-	}
-}
-
-func (f *file) Name() string {
-	return filepath.Base(f.path)
-}
-
-func (f *file) Path() string {
-	return f.path
-}
-
-func (f *file) Size() int64 {
-	if f.size < 0 {
-		if fi, err := os.Stat(f.path); err == nil {
-			f.size = fi.Size()
-		}
+func (o Output) Format(format string) chan File {
+	ch, ok := o[format]
+	if !ok {
+		ch = make(chan File, 32)
+		o[format] = ch
 	}
 
-	return f.size
+	return ch
 }
 
-func (f *file) Checksum(alg string) (string, error) {
-	if f.hash == nil {
-		cs, err := hash.NewHashForPath(f.path)
-		if err != nil {
-			return "undefined", err
-		}
-		f.hash = cs
-	}
-	return f.hash.Sum(alg)
+func (o Output) Append(format, path string) chan File {
+	ch := o.Format(format)
+	ch <- NewFile(path)
+	return ch
 }

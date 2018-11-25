@@ -12,20 +12,27 @@ import (
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/corvus-ch/horcrux/input"
+	"github.com/corvus-ch/horcrux/output"
 )
 
 type writer struct {
 	io.WriteCloser
 	buf   bytes.Buffer
 	in    input.Input
+	out   output.Output
 	level qr.ErrorCorrectionLevel
 	n     int
 	x     byte
 }
 
 // NewWriter returns a qr code format writer instance.
-func NewWriter(in input.Input, x byte) io.WriteCloser {
-	return &writer{in: in, x: x, level: qr.M}
+func NewWriter(in input.Input, out output.Output, x byte) io.WriteCloser {
+	return &writer{
+		in:    in,
+		out:   out,
+		x:     x,
+		level: qr.M,
+	}
 }
 
 func (w *writer) Write(p []byte) (int, error) {
@@ -48,6 +55,8 @@ func (w *writer) Close() error {
 		return w.createImage()
 	}
 
+	close(w.out.Format(Name))
+
 	return nil
 }
 
@@ -67,13 +76,19 @@ func (w *writer) createImage() error {
 
 	// create the output file
 	w.n++
-	file, err := os.Create(fmt.Sprintf("%s.%03d.%d.png", w.in.Stem(), w.x, w.n))
+	path := fmt.Sprintf("%s.%03d.%d.png", w.in.Stem(), w.x, w.n)
+	file, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("failed to open output file: %v", err)
 	}
 	defer file.Close()
 
-	return png.Encode(file, code)
+	err = png.Encode(file, code)
+	if err == nil {
+		w.out.Append(Name, path)
+	}
+
+	return err
 }
 
 // ChunkSize returns the number of encoded bytes written to a single qr code image.
