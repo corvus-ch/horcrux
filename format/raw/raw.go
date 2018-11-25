@@ -36,7 +36,7 @@ func (f *Format) Writer(x byte, out output.Output) (io.Writer, []io.Closer, erro
 		return nil, nil, err
 	}
 
-	close(out.Append(Name, path))
+	close(out.Append(Name, path, nil))
 
 	return file, []io.Closer{file}, nil
 }
