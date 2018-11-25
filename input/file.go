@@ -1,10 +1,11 @@
 package input
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/corvus-ch/horcrux/hash"
 )
 
 // NewFileInput creates an instance of Input representing a file input.
@@ -19,13 +20,15 @@ func NewFileInput(name, stem string) Input {
 		stem = strings.TrimSuffix(b, filepath.Ext(b))
 	}
 
-	return &file{fi, stem, createChecksums(name)}
+	cs, _ := hash.NewHashForPath(name)
+
+	return &file{fi, stem, cs}
 }
 
 type file struct {
-	fileInfo   os.FileInfo
-	stem       string
-	checksumms *Hash
+	fileInfo os.FileInfo
+	stem     string
+	hash     *hash.Hash
 }
 
 // Name returns the files name without its path.
@@ -63,19 +66,7 @@ func (i *file) Size() int64 {
 	return i.fileInfo.Size()
 }
 
-// Checksums returns a set containing the files checksums calculated
-// with several algorithms.
-func (i *file) Checksums() *Hash {
-	return i.checksumms
-}
-
-func createChecksums(name string) *Hash {
-	cs := NewHash()
-	defer cs.Close()
-	f, _ := os.Open(name)
-	defer f.Close()
-	if f != nil {
-		io.Copy(cs, f)
-	}
-	return cs
+// Checksum returns the files checksum calculated for the given algorithm.
+func (i *file) Checksum(alg string) (string, error) {
+	return i.hash.Sum(alg)
 }

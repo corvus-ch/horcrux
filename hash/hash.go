@@ -1,4 +1,4 @@
-package input
+package hash
 
 import (
 	"crypto/md5"
@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"os"
 
 	"golang.org/x/crypto/ripemd160"
 )
@@ -48,6 +49,23 @@ func NewHash() *Hash {
 	}
 }
 
+func NewHashForPath(path string) (cs *Hash, err error) {
+	cs = NewHash()
+	f, _ := os.Open(path)
+	defer f.Close()
+	if f != nil {
+		if _, err = io.Copy(cs, f); err != nil {
+			return
+		}
+	}
+
+	if err = cs.Close(); err != nil {
+		return
+	}
+
+	return
+}
+
 // Write implements io.Writer and updates the all the checksums.
 func (h *Hash) Write(p []byte) (n int, err error) {
 	for _, w := range h.algs {
@@ -64,43 +82,22 @@ func (h *Hash) Write(p []byte) (n int, err error) {
 }
 
 // Close implements io.Closer.
-// Checksums will not be considered valid until Close() got
-// called.
+// Checksums will not be considered valid until Close() got called.
 func (h *Hash) Close() error {
 	h.closed = true
 	return nil
 }
 
-// Md5 returns the inputs MD5 checksums.
-func (h *Hash) Md5() string {
-	return h.Sum(MD5)
-}
-
-// Sha1 returns the inputs SHA1 checksums.
-func (h *Hash) Sha1() string {
-	return h.Sum(SHA1)
-}
-
-// Sha256 returns the inputs SHA256 checksums.
-func (h *Hash) Sha256() string {
-	return h.Sum(SHA256)
-}
-
-// Sha512 returns the inputs SHA512 checksums.
-func (h *Hash) Sha512() string {
-	return h.Sum(SHA512)
-}
-
-// Ripemd160 returns the inputs RIPEMD160 checksums.
-func (h *Hash) Ripemd160() string {
-	return h.Sum(RIPEMD160)
-}
-
-// Sum returns the inputs checksums for the given algorithm.
-func (h *Hash) Sum(a string) string {
+// Sum returns the inputs checksum for the given algorithm.
+func (h *Hash) Sum(a string) (string, error) {
 	if !h.closed {
-		return "undefined"
+		return "undefined", nil
 	}
 
-	return fmt.Sprintf("%x", h.algs[a].Sum(nil))
+	alg, ok := h.algs[a]
+	if !ok {
+		return "", fmt.Errorf("unknown checksum algorithm %v", a)
+	}
+
+	return fmt.Sprintf("%x", alg.Sum(nil)), nil
 }
