@@ -15,4 +15,7 @@ type Input interface {
 	// Size returns the size of the input in bytes.
 	// If the input size can not be determined, a negative number will be returned.
 	Size() int64
+
+	// Checksum returns the inputs checksum calculated with the given algorithm.
+	Checksum(alg string) (string, error)
 }
