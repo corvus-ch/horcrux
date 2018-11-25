@@ -45,7 +45,7 @@ func (f *Format) Writer(x byte, out output.Output) (io.Writer, []io.Closer, erro
 
 	enc := zbase32.NewEncoder(zbase32.StdEncoding, w)
 
-	close(out.Append(Name, path))
+	close(out.Append(Name, path, nil))
 
 	return enc, []io.Closer{file, w, enc}, nil
 }

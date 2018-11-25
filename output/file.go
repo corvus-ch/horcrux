@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -20,17 +21,22 @@ type File interface {
 
 	// Checksum returns the inputs checksum calculated with the given algorithm.
 	Checksum(alg string) (string, error)
+
+	// Meta returns the mata data attached with the file for the given key.
+	Meta(key string) (string, error)
 }
 
 type file struct {
 	path string
 	size int64
 	hash *hash.Hash
+	meta map[string]interface{}
 }
 
-func NewFile(path string) File {
+func NewFile(path string, meta map[string]interface{}) File {
 	return &file{
 		path: path,
+		meta: meta,
 		size: -1,
 	}
 }
@@ -62,4 +68,18 @@ func (f *file) Checksum(alg string) (string, error) {
 		f.hash = cs
 	}
 	return f.hash.Sum(alg)
+}
+
+func (f *file) Meta(key string) (string, error) {
+	if f.meta == nil {
+		return "", fmt.Errorf("no meta data is known with key %s", key)
+	}
+
+	val, ok := f.meta[key]
+
+	if !ok {
+		return "", fmt.Errorf("no meta data is known with key %s", key)
+	}
+
+	return fmt.Sprint(val), nil
 }

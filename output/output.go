@@ -16,8 +16,8 @@ func (o Output) Format(format string) chan File {
 	return ch
 }
 
-func (o Output) Append(format, path string) chan File {
+func (o Output) Append(format, path string, meta map[string]interface{}) chan File {
 	ch := o.Format(format)
-	ch <- NewFile(path)
+	ch <- NewFile(path, meta)
 	return ch
 }

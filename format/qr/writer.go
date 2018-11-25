@@ -85,7 +85,7 @@ func (w *writer) createImage() error {
 
 	err = png.Encode(file, code)
 	if err == nil {
-		w.out.Append(Name, path)
+		w.out.Append(Name, path, nil)
 	}
 
 	return err
