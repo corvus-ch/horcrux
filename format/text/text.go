@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/corvus-ch/horcrux/input"
+	"github.com/corvus-ch/horcrux/output"
 	"gopkg.in/corvus-ch/zbase32.v1"
 )
 
@@ -29,18 +30,22 @@ func (f *Format) OutputFileName(x byte) string {
 }
 
 // Writer creates a new text format writer for the part identified by x.
-func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
-	file, err := os.Create(f.OutputFileName(x))
+func (f *Format) Writer(x byte, out output.Output) (io.Writer, []io.Closer, error) {
+	path := f.OutputFileName(x)
+
+	file, err := os.Create(path)
 	if nil != err {
 		return nil, nil, err
 	}
 
-	w, err := NewWriter(file, f, NewData(f.input, x))
+	w, err := NewWriter(file, f, NewData(f.input, x, out))
 	if err != nil {
 		return nil, []io.Closer{file}, err
 	}
 
 	enc := zbase32.NewEncoder(zbase32.StdEncoding, w)
+
+	close(out.Append(Name, path))
 
 	return enc, []io.Closer{file, w, enc}, nil
 }

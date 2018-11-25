@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/corvus-ch/horcrux/input"
+	"github.com/corvus-ch/horcrux/output"
 	"github.com/corvus-ch/zbase32"
 )
 
@@ -33,8 +34,9 @@ func (f *Format) OutputFileName(x byte) string {
 }
 
 // Writer creates a new QR code format writer for the part identified by x.
-func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
-	w := NewWriter(f.in, x)
+func (f *Format) Writer(x byte, out output.Output) (io.Writer, []io.Closer, error) {
+	out.Format(Name)
+	w := NewWriter(f.in, out, x)
 	enc := zbase32.NewEncoder(encoding, w)
 
 	return enc, []io.Closer{w, enc}, nil
