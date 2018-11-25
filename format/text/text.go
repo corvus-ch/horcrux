@@ -35,7 +35,7 @@ func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
 		return nil, nil, err
 	}
 
-	w, err := NewWriter(file, f)
+	w, err := NewWriter(file, f, NewData(f.input, x))
 	if err != nil {
 		return nil, []io.Closer{file}, err
 	}

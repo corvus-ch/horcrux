@@ -11,13 +11,15 @@ import (
 type Data struct {
 	Input input.Input
 	Lines chan Line
+	X     byte
 	files map[string][]output.File
 }
 
-func NewData(in input.Input, lines chan Line) *Data {
+func NewData(in input.Input, x byte) *Data {
 	d := &Data{
 		Input: in,
-		Lines: lines,
+		Lines: make(chan Line),
+		X:     x,
 		files: make(map[string][]output.File, 0),
 	}
 
