@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/martinlindhe/crc24"
+	"github.com/masterminds/sprig"
 )
 
 const defaultTemplate = `
@@ -44,6 +45,8 @@ func NewWriter(w io.Writer, f *Format, data *Data) (io.WriteCloser, error) {
 		data: data,
 		t:    template.New("text"),
 	}
+
+	tw.t.Funcs(sprig.TxtFuncMap())
 
 	if err := tw.parse(); err != nil {
 		return nil, err
