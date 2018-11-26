@@ -87,6 +87,7 @@ func (w *writer) createImage() error {
 		meta["mode"] = mode
 		meta["modules"] = fmt.Sprintf("%dx%d", code.Bounds().Dx(), code.Bounds().Dy())
 		meta["version"] = (code.Bounds().Dx()-21)/4 + 1
+		meta["encodedBytes"] = data.Len()
 		w.out.Append(Name, path, meta)
 	}
 
