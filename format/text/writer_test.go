@@ -6,6 +6,7 @@ import (
 	"io"
 	"testing"
 
+	"github.com/corvus-ch/horcrux/output"
 	"github.com/sebdah/goldie"
 	"github.com/stretchr/testify/assert"
 )
@@ -88,5 +89,5 @@ func TestWriter_Write_LineLength(t *testing.T) {
 
 func newWriter(n uint8, buf *bytes.Buffer) (io.WriteCloser, error) {
 	f := &Format{LineLength: n}
-	return NewWriter(buf, f, NewData(f.in, 42))
+	return NewWriter(buf, f, NewData(f.input, 42, output.NewOutput()))
 }
