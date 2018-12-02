@@ -1,3 +1,4 @@
+// Package hash provides helpers to calculate and represent the checksum of data for different hash algorithms.
 package hash
 
 import (
@@ -30,13 +31,13 @@ const (
 	RIPEMD160 = "ripemd160"
 )
 
-// Hash represents a set of input checksums calculated with several algorithms.
+// Hash represents a set of checksums calculated with several algorithms.
 type Hash struct {
 	algs   map[string]hash.Hash
 	closed bool
 }
 
-// NewHash returns a new instance of Hash with pre populated algorithms.
+// NewHash returns a new instance of Hash with a pre populated map of algorithms.
 func NewHash() *Hash {
 	return &Hash{
 		algs: map[string]hash.Hash{
@@ -49,6 +50,7 @@ func NewHash() *Hash {
 	}
 }
 
+// NewHashForPath creates a new instance of Hash and calculate the hashes for the given path.
 func NewHashForPath(path string) (cs *Hash, err error) {
 	cs = NewHash()
 	f, _ := os.Open(path)
@@ -66,7 +68,7 @@ func NewHashForPath(path string) (cs *Hash, err error) {
 	return
 }
 
-// Write implements io.Writer and updates the all the checksums.
+// Write updates the hash for all algorithms.
 func (h *Hash) Write(p []byte) (n int, err error) {
 	for _, w := range h.algs {
 		n, err = w.Write(p)
@@ -81,14 +83,15 @@ func (h *Hash) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// Close implements io.Closer.
-// Checksums will not be considered valid until Close() got called.
+// Close marks the hashes as valid.
+// Before Closes gets called, the hashes will be considered undefined.
 func (h *Hash) Close() error {
 	h.closed = true
 	return nil
 }
 
 // Sum returns the inputs checksum for the given algorithm.
+// Unless Close got called, the returned value will be 'undefined'.
 func (h *Hash) Sum(a string) (string, error) {
 	if !h.closed {
 		return "undefined", nil
