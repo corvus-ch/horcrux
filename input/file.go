@@ -58,6 +58,7 @@ func (i *file) Stem() string {
 	return i.stem
 }
 
+// Size returns the inputs size in bytes.
 func (i *file) Size() int64 {
 	if i.fileInfo == nil {
 		return -1
