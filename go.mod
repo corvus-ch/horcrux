@@ -1,7 +1,6 @@
 module github.com/corvus-ch/horcrux
 
 require (
-	github.com/AlekSi/gocoverutil v0.2.0 // indirect
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/bketelsen/logr v0.0.0-20170116012416-f3d070bdd1c5
@@ -16,7 +15,6 @@ require (
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/crypto v0.0.0-20190219172222-a4c6cb3142f2
 	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 // indirect
-	golang.org/x/tools v0.0.0-20190221204921-83362c3779f5 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/corvus-ch/zbase32.v1 v1.0.0
 )
