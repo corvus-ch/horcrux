@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - "1.10"
+  - "1.11"
 
 branches:
   only:
@@ -10,6 +10,9 @@ branches:
 addons:
   apt:
     update: true
+
+env:
+  - GO111MODULE=on
 
 before_install:
   - sudo apt-get install -y --no-install-recommends libgfshare-bin

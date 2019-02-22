@@ -25,7 +25,7 @@ test_pkgs    = $(dir $(shell find . -name '*_test.go'))
 
 .PHONY: install
 install:
-	go get -t -d -tags=integration ./...
+	go mod vendor
 	go get -u github.com/AlekSi/gocoverutil
 
 build: c.out ${package_name}
