@@ -16,8 +16,9 @@ TEST_ARGS ?=
 # Internal variables
 # ------------------
 
-package_name = horcrux
-test_pkgs    = $(dir $(shell find . -name '*_test.go'))
+package_name  = horcrux
+test_files    = $(shell find . -name '*_test.go')
+coverage_file = c.out
 
 # -------
 # Targets
@@ -25,21 +26,17 @@ test_pkgs    = $(dir $(shell find . -name '*_test.go'))
 
 .PHONY: install
 install:
-	go get -t -d -tags=integration ./...
-	go get -u github.com/AlekSi/gocoverutil
+	go mod vendor
 
-build: c.out ${package_name}
+build: $(coverage_file) ${package_name}
 
 .PHONY: test
-test: c.out test.bin ${package_name}
+test: $(coverage_file) test.bin ${package_name}
 	./${package_name} create test.bin && ls test.txt.* > /dev/null
 	./${package_name} restore -o result.bin test.txt.* && diff test.bin result.bin > /dev/null
 
-c.out: main.cov $(addsuffix pkg.cov,${test_pkgs})
-	find . -name '*.cov' -exec gocoverutil -coverprofile=$@ merge {} +
-
-%.cov:
-	go test -coverprofile $@ -covermode atomic ${TEST_ARGS} ./$(@D)
+$(coverage_file): $(test_files)
+	go test -covermode=atomic -coverprofile=$@ ./...
 
 ${package_name}: **/*.go *.go
 	go build
@@ -57,7 +54,4 @@ test.bin:
 
 .PHONY: clean
 clean:
-	rm -f "${package_name}"
-	rm -f test.bin
-	find . -name '*.cov' -delete -or -name 'c.out' -delete
-	find . -maxdepth 1 -name '*.bin.*' -or -name '*.raw.*' -or -name '*.txt.*' -or -name '*.zbase32.*' -or -name 'result*' | xargs rm
+	rm -f "${package_name}" test.bin test.txt.* $(coverage_file)
