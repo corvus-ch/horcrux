@@ -2,11 +2,12 @@ package format
 
 import (
 	"bytes"
+	"crypto/rand"
 	"fmt"
 	"io"
 
-	"crypto/rand"
 	"github.com/bketelsen/logr"
+	"github.com/corvus-ch/horcrux/output"
 	zbase32enc "github.com/corvus-ch/zbase32"
 	"golang.org/x/crypto/openpgp"
 )
@@ -28,10 +29,11 @@ func NewFactory(c []Format, encrypt bool, log logr.Logger) *Factory {
 // Create is a factory method to be passed to the Shamir splitter.
 func (f *Factory) Create(x byte) (io.Writer, error) {
 	ws := make([]io.Writer, len(f.formats))
+	out := output.NewOutput()
 
 	var i int
 	for _, format := range f.formats {
-		w, c, err := format.Writer(x)
+		w, c, err := format.Writer(x, out)
 		if err != nil {
 			return nil, err
 		}

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/corvus-ch/horcrux/input"
+	"github.com/corvus-ch/horcrux/output"
 )
 
 // Name holds the name of the Format.
@@ -27,11 +28,15 @@ func (f *Format) OutputFileName(x byte) string {
 }
 
 // Writer creates a new raw format writer for the part identified by x.
-func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
-	file, err := os.Create(f.OutputFileName(x))
+func (f *Format) Writer(x byte, out output.Output) (io.Writer, []io.Closer, error) {
+	path := f.OutputFileName(x)
+
+	file, err := os.Create(path)
 	if nil != err {
 		return nil, nil, err
 	}
+
+	close(out.Append(Name, path, nil))
 
 	return file, []io.Closer{file}, nil
 }
