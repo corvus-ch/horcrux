@@ -7,6 +7,11 @@ builds:
       - darwin
       - linux
 
+    goarch:
+      - amd64
+      - 386
+      - arm
+
 release:
   github:
     owner: corvus-ch
@@ -16,6 +21,11 @@ archive:
   format_overrides:
     - goos: windows
       format: zip
+
+  files:
+    - LICENSE
+    - README.md
+    - CONTRIBUTING.md
 
 brew:
   github:
@@ -33,6 +43,7 @@ nfpm:
 
   formats:
     - deb
+    - rpm
 
   suggests:
     - gpg
