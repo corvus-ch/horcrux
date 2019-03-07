@@ -28,10 +28,10 @@ deps:
 	go mod download
 
 .PHONY: test
-test: $(cover_file) test.bin $(package_name)
+test: $(cover_file) test.bin $(binary_name)
 test: $(coverage_file) test.bin $(package_name)
-	./${package_name} create test.bin && ls test.txt.* > /dev/null
-	./${package_name} restore -o result.bin test.txt.* && diff test.bin result.bin > /dev/null
+	./$(binary_name) create test.bin && ls test.txt.* > /dev/null
+	./$(binary_name) restore -o result.bin test.txt.* && diff test.bin result.bin > /dev/null
 
 
 $(cover_file): $(wildcard **/*_test.go)
