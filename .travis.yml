@@ -18,7 +18,12 @@ env:
 addons:
   apt:
     packages:
-    - rpm
+      - libgfshare-bin
+      - rpm
+
+  homebrew:
+    packages:
+      - libgfshare
 
 cache:
     directories:
