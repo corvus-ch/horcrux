@@ -14,12 +14,9 @@ import (
 	"github.com/corvus-ch/horcrux/input"
 )
 
-const indexLength = 7
-
 type writer struct {
 	io.WriteCloser
 	buf   bytes.Buffer
-	chunk int
 	in    input.Input
 	level qr.ErrorCorrectionLevel
 	n     int
@@ -56,7 +53,7 @@ func (w *writer) Close() error {
 
 func (w *writer) createImage() error {
 	var data strings.Builder
-	data.WriteString(fmt.Sprintf("%03d:%d::", w.x, w.n))
+	data.WriteString(w.index())
 	data.Write(w.buf.Next(w.ChunkSize()))
 	code, err := qr.Encode(data.String(), w.level, qr.AlphaNumeric)
 	if err != nil {
@@ -81,16 +78,26 @@ func (w *writer) createImage() error {
 
 // ChunkSize returns the number of encoded bytes written to a single qr code image.
 func (w *writer) ChunkSize() int {
-	if w.chunk == 0 {
-		w.chunk = ChunkSize(w.Capacity(), w.in.Size())
-	}
-
-	return w.chunk
+	return ChunkSize(w.Capacity(), w.in.Size())
 }
 
 // Capacity returns the number of bytes which fit into a single qr code image.
 func (w *writer) Capacity() int {
-	return Capacity(w.level)
+	indexLength := len(w.index())
+	switch w.level {
+	case qr.L:
+		return 4296 - indexLength
+	case qr.M:
+		return 3391 - indexLength
+	case qr.Q:
+		return 2420 - indexLength
+	default:
+		return 1852 - indexLength
+	}
+}
+
+func (w *writer) index() string {
+	return fmt.Sprintf("%03d:%d::", w.x, w.n)
 }
 
 // NumChunks returns the number of images required to encode the data.
@@ -107,18 +114,4 @@ func ChunkSize(capacity int, size int64) int {
 	}
 
 	return chunk
-}
-
-// Capacity returns the number of bytes which fit into a single qr code image.
-func Capacity(l qr.ErrorCorrectionLevel) int {
-	switch l {
-	case qr.L:
-		return 4296 - indexLength
-	case qr.M:
-		return 3391 - indexLength
-	case qr.Q:
-		return 2420 - indexLength
-	default:
-		return 1852 - indexLength
-	}
 }
