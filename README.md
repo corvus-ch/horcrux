@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/corvus-ch/horcrux.svg?branch=master)](https://travis-ci.org/corvus-ch/horcrux)
 [![Maintainability](https://api.codeclimate.com/v1/badges/58cc94f18c45c113f769/maintainability)](https://codeclimate.com/github/corvus-ch/horcrux/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/58cc94f18c45c113f769/test_coverage)](https://codeclimate.com/github/corvus-ch/horcrux/test_coverage)
+[![DEB Repository](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://packagecloud.io/corvus-ch/tools)
+[![RPM Repository](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)](https://packagecloud.io/corvus-ch/tools)
 
 The use case which brought this tool into existence, is that of creating
 backups of GPG private keys or any other cryptographic key or data of similar
@@ -14,12 +16,17 @@ can recreate the secret they were created from.
 
 ## Install
 
-### Linux (Debian/Ubuntu)
+### deb
 
-1. Visit https://github.com/corvus-ch/horcrux/releases and download the latest `.deb` package.
-2. Use `dpkg -i` to install that package.
+    curl -s https://packagecloud.io/install/repositories/corvus-ch/tools/script.deb.sh | sudo bash
+    apt install bilocation
 
-### OS X
+### rpm
+
+    curl -s https://packagecloud.io/install/repositories/corvus-ch/tools/script.rpm.sh | sudo bash
+    yum install bilocation
+
+### Homebrew
 
     brew install corvus-ch/tools/horcrux
 
