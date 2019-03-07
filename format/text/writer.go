@@ -9,6 +9,7 @@ import (
 
 	"github.com/corvus-ch/horcrux/input"
 	"github.com/martinlindhe/crc24"
+	"github.com/masterminds/sprig"
 )
 
 const defaultTemplate = `
@@ -59,6 +60,8 @@ func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
 		},
 		t: template.New("text"),
 	}
+
+	tw.t.Funcs(sprig.TxtFuncMap())
 
 	if err := tw.parse(); err != nil {
 		return nil, err
