@@ -8,10 +8,10 @@ import (
 )
 
 type Config interface {
-	Input() (io.Reader, error)
+	Reader() (io.Reader, error)
 	InputInfo() input.Input
 	Formats() ([]format.Format, error)
-	Encrypt() bool
+	Encrypted() bool
 	Parts() int
 	Threshold() int
 }

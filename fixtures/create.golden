@@ -5,6 +5,7 @@ ERROR
 ERROR Flags:
 ERROR       --help             Show context-sensitive help (also try --help-long and
 ERROR                          --help-man).
+ERROR       --version          Show application version.
 ERROR   -o, --output=OUTPUT    name stem for the output files
 ERROR   -m, --sharecount=3     the number of horcruxes to create
 ERROR   -n, --threshold=2      the minimal number of horcruxes required for a restore

@@ -3,7 +3,8 @@ ERROR
 ERROR a helper for preparing backups of data worth protecting
 ERROR 
 ERROR Flags:
-ERROR   --help  Show context-sensitive help (also try --help-long and --help-man).
+ERROR   --help     Show context-sensitive help (also try --help-long and --help-man).
+ERROR   --version  Show application version.
 ERROR 
 ERROR Commands:
 ERROR   help [<command>...]

@@ -11,7 +11,7 @@ import (
 
 // Create creates a new set of secret parts according to the given config.
 func Create(cfg Config, log logr.Logger) (result error) {
-	reader, err := cfg.Input()
+	reader, err := cfg.Reader()
 	if err != nil {
 		return fmt.Errorf("failed to open input: %v", err)
 	}
@@ -25,7 +25,7 @@ func Create(cfg Config, log logr.Logger) (result error) {
 		return fmt.Errorf("failed to setup output formatting: %v", err)
 	}
 
-	factory := format.NewFactory(formats, cfg.Encrypt(), log)
+	factory := format.NewFactory(formats, cfg.Encrypted(), log)
 	defer func() {
 		if err := factory.Close(); err != nil && result == nil {
 			result = err
