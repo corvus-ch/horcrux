@@ -26,3 +26,5 @@ require (
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/corvus-ch/zbase32.v1 v1.0.0
 )
+
+go 1.13
