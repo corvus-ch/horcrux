@@ -66,32 +66,32 @@ var errorTests = []struct {
 	setup  func(t *testing.T, cfg *Config, dir string)
 	output string
 }{
-	{"input", func(t *testing.T, cfg *Config, _ string) {
-		cfg.On("Input").Maybe().Return(nil, errors.New("input error"))
+	{"reader", func(t *testing.T, cfg *Config, _ string) {
+		cfg.On("Reader").Maybe().Return(nil, errors.New("input error"))
 	}, "failed to open input: input error"},
 
 	{"formats", func(t *testing.T, cfg *Config, _ string) {
-		cfg.On("Input").Return(bytes.NewBufferString(t.Name()), nil)
+		cfg.On("Reader").Return(bytes.NewBufferString(t.Name()), nil)
 		cfg.On("Formats").Return(nil, errors.New("format error"))
 	}, "failed to setup output formatting: format error"},
 
 	{"processing pipeline", func(t *testing.T, cfg *Config, dir string) {
-		cfg.On("Input").Return(bytes.NewBufferString(t.Name()), nil)
+		cfg.On("Reader").Return(bytes.NewBufferString(t.Name()), nil)
 		cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(outputStem(dir, raw.Name)))
 		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(input.NewStreamInput(outputStem(dir, raw.Name)))}, nil)
 		cfg.On("Parts").Return(3)
 		cfg.On("Threshold").Return(4)
-		cfg.On("Encrypt").Return(false)
+		cfg.On("Encrypted").Return(false)
 	}, "failed to create processing pipeline: parts cannot be less than threshold"},
 
 	{"copy", func(t *testing.T, cfg *Config, dir string) {
 		f, _ := os.Open(t.Name())
-		cfg.On("Input").Return(f, nil)
+		cfg.On("Reader").Return(f, nil)
 		cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(outputStem(dir, raw.Name)))
 		cfg.On("Formats").Maybe().Return([]format.Format{raw.New(input.NewStreamInput(outputStem(dir, raw.Name)))}, nil)
 		cfg.On("Parts").Return(3)
 		cfg.On("Threshold").Return(2)
-		cfg.On("Encrypt").Return(false)
+		cfg.On("Encrypted").Return(false)
 	}, "failed to process data: invalid argument"},
 }
 

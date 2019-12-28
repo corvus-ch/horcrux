@@ -5,8 +5,9 @@ ERROR
 ERROR Flags:
 ERROR       --help           Show context-sensitive help (also try --help-long and
 ERROR                        --help-man).
+ERROR       --version        Show application version.
 ERROR   -o, --output=OUTPUT  path to the output
-ERROR   -f, --format="text"  the formats the horcruxes are created in
+ERROR   -f, --format=text    the formats the horcruxes are created in
 ERROR   -d, --decrypt        encrypt output
 ERROR 
 ERROR Args:

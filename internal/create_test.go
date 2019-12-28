@@ -17,11 +17,13 @@ import (
 )
 
 func assertCreateAction(t *testing.T, args []string, action func(create.Config, logr.Logger) error) {
+	cfg, err := internal.NewConfigFromYaml("")
+	assert.NoError(t, err)
 	log := buffered.New(0)
 	app := kingpin.New("test", "test")
-	internal.RegisterCreateCommand(app, log, action)
-	_, err := app.Parse(args)
-	assert.Nil(t, err)
+	internal.RegisterCreateCommand(app, cfg, log, action)
+	_, err = app.Parse(args)
+	assert.NoError(t, err)
 }
 
 func TestCreateCommand_Encrypt(t *testing.T) {
@@ -36,7 +38,7 @@ func TestCreateCommand_Encrypt(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config, _ logr.Logger) error {
-				assert.Equal(t, test.encrypted, cfg.Encrypt())
+				assert.Equal(t, test.encrypted, cfg.Encrypted())
 				return nil
 			})
 		})
@@ -99,7 +101,7 @@ func TestCreateCommand_Input(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config, _ logr.Logger) error {
-				reader, err := cfg.Input()
+				reader, err := cfg.Reader()
 				assert.Nil(t, err)
 				assert.Equal(t, test.file.Name(), reader.(*os.File).Name())
 				return nil

@@ -1,7 +1,6 @@
 package internal_test
 
 import (
-	"github.com/corvus-ch/horcrux/format/text"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -9,6 +8,7 @@ import (
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/format/base64"
 	"github.com/corvus-ch/horcrux/format/raw"
+	"github.com/corvus-ch/horcrux/format/text"
 	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/horcrux/restore"
@@ -18,11 +18,13 @@ import (
 )
 
 func assertRestoreAction(t *testing.T, args []string, action func(restore.Config, restore.PasswordProvider, logr.Logger) error) {
+	cfg, err := internal.NewConfigFromYaml("")
+	assert.NoError(t, err)
 	log := buffered.New(0)
 	app := kingpin.New("test", "test")
-	internal.RegisterRestoreCommand(app, log, action)
-	_, err := app.Parse(args)
-	assert.Nil(t, err)
+	internal.RegisterRestoreCommand(app, cfg, log, action)
+	_, err = app.Parse(args)
+	assert.NoError(t, err)
 }
 
 func createTempFile(t *testing.T) *os.File {

@@ -15,17 +15,17 @@ type Config struct {
 
 func NewConfig(name string, f format.Format, encrypt bool) *Config {
 	cfg := &Config{}
-	cfg.On("Input").Maybe().Return(bytes.NewBufferString(name), nil)
+	cfg.On("Reader").Maybe().Return(bytes.NewBufferString(name), nil)
 	cfg.On("InputInfo").Maybe().Return(input.NewStreamInput(""))
 	cfg.On("Formats").Maybe().Return([]format.Format{f}, nil)
-	cfg.On("Encrypt").Maybe().Return(encrypt)
+	cfg.On("Encrypted").Maybe().Return(encrypt)
 	cfg.On("Parts").Maybe().Return(3)
 	cfg.On("Threshold").Maybe().Return(2)
 
 	return cfg
 }
 
-func (c *Config) Input() (io.Reader, error) {
+func (c *Config) Reader() (io.Reader, error) {
 	args := c.Called()
 	r := args.Get(0)
 	if r == nil {
@@ -51,7 +51,7 @@ func (c *Config) Formats() ([]format.Format, error) {
 	return f.([]format.Format), args.Error(1)
 }
 
-func (c *Config) Encrypt() bool {
+func (c *Config) Encrypted() bool {
 	args := c.Called()
 	return args.Bool(0)
 }
