@@ -1,5 +1,7 @@
 module github.com/corvus-ch/horcrux
 
+go 1.16
+
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
@@ -23,4 +25,5 @@ require (
 	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/corvus-ch/zbase32.v1 v1.0.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
