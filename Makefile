@@ -25,7 +25,7 @@ cover_file    = c.out
 
 .PHONY: deps
 deps:
-	go mod download
+	go mod vendor
 
 .PHONY: test
 test: $(cover_file) test.bin $(binary_name)
