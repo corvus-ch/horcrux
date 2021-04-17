@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - "1.11"
+  - "1.16"
 
 branches:
   only:
@@ -24,6 +24,11 @@ addons:
   homebrew:
     packages:
       - libgfshare
+
+jobs:
+  # Installing `libgfshare` ceased to work. Ignore macOS for now.
+  allow_failures:
+    - os: osx
 
 cache:
     directories:
