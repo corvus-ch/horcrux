@@ -1,5 +1,10 @@
 on:
-  - pull_request
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+    tags:
+      - v*
 
 name: Test
 jobs:
@@ -15,6 +20,8 @@ jobs:
           apt: libgfshare-bin rpm
 
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - run: make test
 
@@ -26,3 +33,15 @@ jobs:
           prefix: github.com/corvus-ch/horcrux/
           coverageLocations: |
             ${{github.workspace}}/c.out:gocov
+
+      - uses: goreleaser/goreleaser-action@v3
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          path: dist/horcrux_*-*
