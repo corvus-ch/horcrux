@@ -11,42 +11,43 @@ builds:
       - amd64
       - 386
       - arm
+      - arm64
 
 release:
   github:
     owner: corvus-ch
     name: horcrux
 
-archive:
-  format_overrides:
-    - goos: windows
-      format: zip
+archives:
+  - format_overrides:
+      - goos: windows
+        format: zip
 
-  files:
-    - LICENSE
-    - README.md
-    - CONTRIBUTING.md
+    files:
+      - LICENSE
+      - README.md
+      - CONTRIBUTING.md
 
-brew:
-  github:
-    owner: corvus-ch
-    name: homebrew-tools
+brews:
+  - tap:
+      owner: corvus-ch
+      name: homebrew-tools
 
-  homepage: https://github.com/corvus-ch/horcrux
-  description: A helper for preparing backups of data worth protecting
+    homepage: https://github.com/corvus-ch/horcrux
+    description: A helper for preparing backups of data worth protecting
 
-nfpm:
-  homepage: https://github.com/corvus-ch/horcrux
-  description: A helper for preparing backups of data worth protecting
-  maintainer: Christian Häusler <haeusler.christian@mac.com>
-  license: MIT
+nfpms:
+  - homepage: https://github.com/corvus-ch/horcrux
+    description: A helper for preparing backups of data worth protecting
+    maintainer: Christian Häusler <haeusler.christian@mac.com>
+    license: MIT
 
-  formats:
-    - deb
-    - rpm
+    formats:
+      - deb
+      - rpm
 
-  suggests:
-    - gpg
-    - paperkey
+    suggests:
+      - gpg
+      - paperkey
 
-  bindir: /usr/bin
+    bindir: /usr/bin
