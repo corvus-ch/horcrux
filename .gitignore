@@ -18,7 +18,7 @@
 /Godeps/
 
 # Testing artifacts
-test.*
+/test.*
 horcrux
 result.bin
 text.tmpl

@@ -1,0 +1,19 @@
+on:
+  - pull_request
+
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: ConorMacBride/install-package@v1
+        with:
+          brew: libgfshare
+          apt: libgfshare-bin rpm
+
+      - uses: actions/checkout@v3
+
+      - run: make test
