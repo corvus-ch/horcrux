@@ -25,3 +25,8 @@ text.tmpl
 
 # Release artifacts
 /dist/
+
+# Coverage reporting
+cc-reporter*
+/*.json
+public-key.asc
