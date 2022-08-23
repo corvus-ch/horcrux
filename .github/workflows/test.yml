@@ -1,0 +1,55 @@
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+    tags:
+      - v*
+
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: ConorMacBride/install-package@v1
+        with:
+          brew: libgfshare
+          apt: libgfshare-bin rpm
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - run: make test
+
+      - uses: paambaati/codeclimate-action@v3.0.0
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          prefix: github.com/corvus-ch/horcrux/
+          coverageLocations: |
+            ${{github.workspace}}/c.out:gocov
+
+      - uses: goreleaser/goreleaser-action@v3
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          path: dist/horcrux_*-*
+
+      - if: matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/')
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+        run: |
+          sudo gem install package_cloud
+          package_cloud push corvus-ch/tools/any/any dist/*.deb
+          package_cloud push corvus-ch/tools/rpm_any/rpm_any dist/*.rpm

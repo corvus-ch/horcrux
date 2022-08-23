@@ -35,7 +35,7 @@ test: $(coverage_file) test.bin $(package_name)
 
 
 $(cover_file): $(wildcard **/*_test.go)
-	go test -covermode=atomic -coverprofile=$@ ./...
+	go test -coverprofile=$@ ./...
 
 .PHONY: build
 build: $(binary_name)

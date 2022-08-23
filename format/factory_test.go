@@ -43,7 +43,7 @@ func TestFactory_Create(t *testing.T) {
 			assertTempFile(t, filepath.Join(tmp, "plain.raw.042"), 5)
 		}},
 		{"encrypted", true, func(t *testing.T) {
-			assertTempFile(t, filepath.Join(tmp, "encrypted.raw.042"), 100)
+			assertTempFile(t, filepath.Join(tmp, "encrypted.raw.042"), 33)
 			assert.Regexp(t, "INFO Password for 042: [ybndrfg8ejkmcpqxot1uwisza345h769]{12}", log.Buf().String())
 		}},
 	}
