@@ -79,7 +79,7 @@ func (r *reader) assertChecksum(data []byte, l *Line) error {
 	}
 
 	if r.crc.Sum24() != l.CRC {
-		return fmt.Errorf(`checksum does not match on Line %v: %06X`, l.N, r.crc.Sum24())
+		return fmt.Errorf(`checksum does not match on Line %v: %06X`, l.Number, r.crc.Sum24())
 	}
 
 	return nil

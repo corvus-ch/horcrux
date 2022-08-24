@@ -7,7 +7,6 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/corvus-ch/horcrux/input"
 	"github.com/martinlindhe/crc24"
 	"github.com/masterminds/sprig"
 )
@@ -28,37 +27,23 @@ type writer struct {
 	io.WriteCloser
 	err  error
 	w    io.Writer    // The underlying writer
-	n    int          // Lines count
+	n    uint64       // Lines count
 	buf  []byte       // buffered data waiting to be encoded
 	nbuf int          // number of bytes in buf
 	crc  crc24.Hash24 // The checksum
 	t    *template.Template
-	data templateData
+	data *Data
 	wg   sync.WaitGroup
 }
 
-type line struct {
-	Number int
-	Data   string
-	CRC    uint32
-}
-
-type templateData struct {
-	Input input.Input
-	Lines chan line
-}
-
 // NewWriter returns an text format writer instance.
-func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
+func NewWriter(w io.Writer, f *Format, data *Data) (io.WriteCloser, error) {
 	tw := &writer{
-		w:   w,
-		buf: make([]byte, bufLen(f.LineLength)),
-		crc: crc24.New(),
-		data: templateData{
-			Input: f.input,
-			Lines: make(chan line),
-		},
-		t: template.New("text"),
+		w:    w,
+		buf:  make([]byte, bufLen(f.LineLength)),
+		crc:  crc24.New(),
+		data: data,
+		t:    template.New("text"),
 	}
 
 	tw.t.Funcs(sprig.TxtFuncMap())
@@ -150,7 +135,7 @@ func (w *writer) writeLine(data []byte) {
 			buf.WriteRune(' ')
 		}
 	}
-	w.data.Lines <- line{Number: w.n, Data: buf.String(), CRC: w.crc.Sum24()}
+	w.data.Lines <- Line{Number: w.n, Data: buf.String(), CRC: w.crc.Sum24()}
 }
 
 func bufLen(l uint8) int {

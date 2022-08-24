@@ -9,8 +9,8 @@ import (
 
 // Line represents a parsed data Line.
 type Line struct {
-	// N holds the line number.
-	N uint64
+	// Number holds the line number.
+	Number uint64
 	// Data holds the data payload part of the line.
 	Data string
 	// CRC holds the lines checksum or if data is nil, for the whole document.
@@ -41,7 +41,7 @@ func (p *Parser) Parse() (*Line, error) {
 		return nil, err
 	}
 
-	if ln.N, err = p.readLineNumber(); err != nil {
+	if ln.Number, err = p.readLineNumber(); err != nil {
 		return nil, err
 	}
 
