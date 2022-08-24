@@ -1,0 +1,13 @@
+ERROR usage: horcrux format [<flags>] [<input>]
+ERROR 
+ERROR formats input the same way as create would do without doing the split
+ERROR 
+ERROR Flags:
+ERROR       --help             Show context-sensitive help (also try --help-long and
+ERROR                          --help-man).
+ERROR   -f, --format=text ...  the output formats
+ERROR   -o, --output=OUTPUT    name stem for the output files
+ERROR 
+ERROR Args:
+ERROR   [<input>]  the input file
+ERROR 

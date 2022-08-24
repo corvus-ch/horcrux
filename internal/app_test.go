@@ -15,6 +15,7 @@ var appTests = []struct {
 }{
 	{"default", []string{"help"}},
 	{"create", []string{"help", "create"}},
+	{"format", []string{"help", "format"}},
 	{"restore", []string{"help", "restore"}},
 }
 
