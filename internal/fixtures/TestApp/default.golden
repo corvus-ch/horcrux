@@ -12,6 +12,9 @@ ERROR
 ERROR   create [<flags>] [<input>]
 ERROR     create a new set of horcruxes
 ERROR 
+ERROR   format [<flags>] [<input>]
+ERROR     formats input the same way as create would do without doing the split
+ERROR 
 ERROR   restore [<flags>] <files>...
 ERROR     restores your valuable data from a set of horcruxes
 ERROR 

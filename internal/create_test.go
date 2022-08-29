@@ -1,15 +1,11 @@
 package internal_test
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/horcrux/create"
-	"github.com/corvus-ch/horcrux/format/raw"
-	"github.com/corvus-ch/horcrux/format/text"
-	"github.com/corvus-ch/horcrux/format/zbase32"
 	"github.com/corvus-ch/horcrux/internal"
 	"github.com/corvus-ch/logr/buffered"
 	"github.com/stretchr/testify/assert"
@@ -82,25 +78,13 @@ func TestCreateCommand_Parts(t *testing.T) {
 }
 
 func TestCreateCommand_Input(t *testing.T) {
-	file, err := ioutil.TempFile("", t.Name())
-	if err != nil {
-		t.Fatal(err)
-	}
+	file := tmpFile(t)
 	defer os.Remove(file.Name())
-	tests := []struct {
-		name string
-		args []string
-		file *os.File
-	}{
-		{"default", []string{"create"}, os.Stdin},
-		{"stdin", []string{"create", "--", "-"}, os.Stdin},
-		{"file", []string{"create", "--", file.Name()}, file},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+	for name, test := range newInputTests("create", file) {
+		t.Run(name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config, _ logr.Logger) error {
 				reader, err := cfg.Input()
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, test.file.Name(), reader.(*os.File).Name())
 				return nil
 			})
@@ -109,28 +93,10 @@ func TestCreateCommand_Input(t *testing.T) {
 }
 
 func TestCreateCommand_Formats(t *testing.T) {
-	tests := []struct {
-		name    string
-		args    []string
-		formats []string
-	}{
-		{"default", []string{"create"}, []string{text.Name}},
-		{"single", []string{"create", "-f", "raw"}, []string{raw.Name}},
-		{"multiple", []string{"create", "-f", "raw", "-f", "zbase32"}, []string{raw.Name, zbase32.Name}},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+	for name, test := range newFormatsTests("create") {
+		t.Run(name, func(t *testing.T) {
 			assertCreateAction(t, test.args, func(cfg create.Config, _ logr.Logger) error {
-				formats, err := cfg.Formats()
-				if err != nil {
-					t.Fatal(err)
-				}
-				if len(test.formats) != len(formats) {
-					t.Fatalf("expected %d formats, got %d", len(test.formats), len(formats))
-				}
-				for i, name := range test.formats {
-					assert.Equal(t, name, formats[i].Name())
-				}
+				assertFormats(t, cfg, test.formats)
 				return nil
 			})
 		})
