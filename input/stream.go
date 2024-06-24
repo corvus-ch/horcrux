@@ -1,10 +1,12 @@
 package input
 
+import "github.com/corvus-ch/horcrux/hash"
+
 // NewStreamInput returns an instance of Input representing an input passed via STDIN.
 func NewStreamInput(stem string) Input {
 	i := &stream{
-		stem:       "part",
-		checksumms: NewHash(),
+		stem: "part",
+		hash: hash.NewHash(),
 	}
 	if len(stem) > 0 {
 		i.stem = stem
@@ -14,8 +16,8 @@ func NewStreamInput(stem string) Input {
 }
 
 type stream struct {
-	stem       string
-	checksumms *Hash
+	stem string
+	hash *hash.Hash
 }
 
 // Name will return an empty string.
@@ -40,19 +42,18 @@ func (i *stream) Size() int64 {
 	return -1
 }
 
-// Checksums returns a set containing the inputs checksums calculated
-// with several algorithms. The checksum will not be valid until the
-// checksum object will be closed.
-func (i *stream) Checksums() *Hash {
-	return i.checksumms
+// Checksum returns the inputs checksum calculated for the given algorithm.
+// The checksum will not be valid until the checksum object got closed.
+func (i *stream) Checksum(alg string) (string, error) {
+	return i.hash.Sum(alg)
 }
 
-// Write will add the bytes to the checksums.
+// Write will add the bytes to the checksum calculation.
 func (i *stream) Write(p []byte) (int, error) {
-	return i.checksumms.Write(p)
+	return i.hash.Write(p)
 }
 
 // Close will closes the checksum calculation making them valid.
 func (i *stream) Close() error {
-	return i.checksumms.Close()
+	return i.hash.Close()
 }

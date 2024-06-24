@@ -3,8 +3,10 @@ package text
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"testing"
 
+	"github.com/corvus-ch/horcrux/output"
 	"github.com/sebdah/goldie"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,7 +58,7 @@ func TestWriterWrite(t *testing.T) {
 	for _, test := range writeTests {
 		t.Run(test.data, func(t *testing.T) {
 			buf.Reset()
-			w, err := NewWriter(&buf, &Format{LineLength: 42})
+			w, err := newWriter(42, &buf)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -74,7 +76,7 @@ func TestWriter_Write_LineLength(t *testing.T) {
 	for i := 14; i < len(data)+13; i++ {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			buf.Reset()
-			w, err := NewWriter(&buf, &Format{LineLength: uint8(i)})
+			w, err := newWriter(uint8(i), &buf)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -83,4 +85,9 @@ func TestWriter_Write_LineLength(t *testing.T) {
 			goldie.Assert(t, fmt.Sprintf("line_length_%d", i), buf.Bytes())
 		})
 	}
+}
+
+func newWriter(n uint8, buf *bytes.Buffer) (io.WriteCloser, error) {
+	f := &Format{LineLength: n}
+	return NewWriter(buf, f, NewData(f.input, 42, output.NewOutput()))
 }
