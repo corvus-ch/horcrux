@@ -43,20 +43,27 @@ type line struct {
 	CRC    uint32
 }
 
+type output struct {
+	Name string
+	X    byte
+}
+
 type templateData struct {
-	Input input.Input
-	Lines chan line
+	Input  input.Input
+	Lines  chan line
+	Output output
 }
 
 // NewWriter returns an text format writer instance.
-func NewWriter(w io.Writer, f *Format) (io.WriteCloser, error) {
+func NewWriter(w io.Writer, f *Format, o output) (io.WriteCloser, error) {
 	tw := &writer{
 		w:   w,
 		buf: make([]byte, bufLen(f.LineLength)),
 		crc: crc24.New(),
 		data: templateData{
-			Input: f.input,
-			Lines: make(chan line),
+			Input:  f.input,
+			Lines:  make(chan line),
+			Output: o,
 		},
 		t: template.New("text"),
 	}

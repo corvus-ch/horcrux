@@ -56,7 +56,7 @@ func TestWriterWrite(t *testing.T) {
 	for _, test := range writeTests {
 		t.Run(test.data, func(t *testing.T) {
 			buf.Reset()
-			w, err := NewWriter(&buf, &Format{LineLength: 42})
+			w, err := NewWriter(&buf, &Format{LineLength: 42}, output{"test", 7})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -74,7 +74,7 @@ func TestWriter_Write_LineLength(t *testing.T) {
 	for i := 14; i < len(data)+13; i++ {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			buf.Reset()
-			w, err := NewWriter(&buf, &Format{LineLength: uint8(i)})
+			w, err := NewWriter(&buf, &Format{LineLength: uint8(i)}, output{"test", 13})
 			if err != nil {
 				t.Fatal(err)
 			}

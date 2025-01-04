@@ -30,12 +30,16 @@ func (f *Format) OutputFileName(x byte) string {
 
 // Writer creates a new text format writer for the part identified by x.
 func (f *Format) Writer(x byte) (io.Writer, []io.Closer, error) {
-	file, err := os.Create(f.OutputFileName(x))
+	name := f.OutputFileName(x)
+	file, err := os.Create(name)
 	if nil != err {
 		return nil, nil, err
 	}
 
-	w, err := NewWriter(file, f)
+	w, err := NewWriter(file, f, output{
+		Name: name,
+		X:    x,
+	})
 	if err != nil {
 		return nil, []io.Closer{file}, err
 	}
