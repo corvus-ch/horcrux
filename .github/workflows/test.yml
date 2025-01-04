@@ -23,6 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
       - run: make test
 
       - uses: paambaati/codeclimate-action@v3.0.0
