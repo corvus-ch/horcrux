@@ -49,10 +49,52 @@ Restore a GPG key (builds on top of the above example):
     paperkey --pubring=public.gpg --secrets=paperkey.bin --input-type=raw --output=secret.gpg
     diff "${KEY_ID}.gpg" secret.gpg
 
+Create PDF output using a template
+
+Contents of `text.tmpl` located in the current working directory.
+
+```go-tmpl
+{{define "header" -}}
+= My document title
+{{ printf "%03d" .Output.X }}, {docdate}
+:version-label: Fragment
+:doctype: book
+
+== File Information
+
+[horizontal]
+Name:: {{ .Input.Name }}
+Size:: {{ .Input.Size }} bytes
+MD5:: {{ .Input.Checksums.Md5 }}
+SHA1:: {{ .Input.Checksums.Sha1 }}
+SHA256:: {{ .Input.Checksums.Sha256 }}
+SHA512:: {{ .Input.Checksums.Sha512 }}
+
+== Text Data
+....
+{{end}}
+
+{{define "footer" -}}
+....
+
+== QR Codes
+
+image::{{ .Input.Stem }}.{{ printf "%03d" .Output.X }}.1.png[align="center"]
+{{end}}
+```
+
+    horcrux create --encrypt -f text -f qr "/path/to/secret"
+    for f in test.txt.*; do asciidoctor-pdf -o "${f%.txt.*}-${f##*.}.pdf" "${f}"; done
+
+Print the PDFs. Write the corresponding password onto each of them by hand.
+
+IMPORTANT: This produces an incomplete result, should your secret does not fit in one single QR code.
+Add more image lines as needed.
+
 ## Known issues
 
 The QR code format provide a limited feature set and can not be used to recover
-the data. A tool like `zbarimg` from the [zbar libary][zbar] can be used to
+the data directly. A tool like `zbarimg` from the [zbar libary][zbar] can be used to
 scan the qr codes so it can be read by the zbase32 format.
 
 ## Milestones
@@ -60,7 +102,8 @@ scan the qr codes so it can be read by the zbase32 format.
 * [x] Basic application
 * [x] Plain text format for print and easy scan/ocr
 * [x] QR Code format for easier scanning
-* [ ] Template system for custom output
+* [x] Template system for custom output
+* [ ] Extend possibilities with templates
 
 ## Contributing and license
 
